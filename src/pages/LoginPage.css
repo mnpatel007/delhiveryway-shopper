@@ -1,0 +1,122 @@
+:root {
+    --primary-color: #27ae60;
+    --secondary-color: #2ecc71;
+    --background-color: #f8f9fa;
+    --text-color: #2c3e50;
+    --error-color: #e74c3c;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    padding: 20px;
+}
+
+.login-wrapper {
+    width: 100%;
+    max-width: 450px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-title {
+    text-align: center;
+    color: var(--text-color);
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.login-subtitle {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+    font-size: 1rem;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.login-button {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.login-button:hover {
+    background-color: #229954;
+}
+
+.login-button:disabled {
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+}
+
+.signup-link {
+    text-align: center;
+    color: #7f8c8d;
+}
+
+.signup-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.error-message {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: var(--error-color);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+    border: 1px solid rgba(231, 76, 60, 0.2);
+}
+
+@media (max-width: 480px) {
+    .login-wrapper {
+        max-width: 100%;
+        padding: 20px;
+    }
+}

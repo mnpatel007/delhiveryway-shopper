@@ -1,0 +1,119 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+
+const AuthContext = createContext();
+
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+};
+
+export const AuthProvider = ({ children }) => {
+    const [shopper, setShopper] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
+    useEffect(() => {
+        const token = localStorage.getItem('shopperToken');
+        if (token) {
+            // Set default authorization header
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            
+            // Get shopper data from token or make API call
+            const shopperData = localStorage.getItem('shopperData');
+            if (shopperData) {
+                setShopper(JSON.parse(shopperData));
+            }
+        }
+        setLoading(false);
+    }, []);
+
+    const login = async (email, password) => {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/shopper/auth/login`, {
+                email,
+                password
+            });
+
+            const { token, shopper: shopperData } = response.data;
+            
+            localStorage.setItem('shopperToken', token);
+            localStorage.setItem('shopperData', JSON.stringify(shopperData));
+            
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            setShopper(shopperData);
+            
+            return { success: true };
+        } catch (error) {
+            return { 
+                success: false, 
+                message: error.response?.data?.message || 'Login failed' 
+            };
+        }
+    };
+
+    const register = async (name, email, password, phone) => {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/shopper/auth/register`, {
+                name,
+                email,
+                password,
+                phone
+            });
+
+            const { token, shopper: shopperData } = response.data;
+            
+            localStorage.setItem('shopperToken', token);
+            localStorage.setItem('shopperData', JSON.stringify(shopperData));
+            
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            setShopper(shopperData);
+            
+            return { success: true };
+        } catch (error) {
+            return { 
+                success: false, 
+                message: error.response?.data?.message || 'Registration failed' 
+            };
+        }
+    };
+
+    const logout = () => {
+        localStorage.removeItem('shopperToken');
+        localStorage.removeItem('shopperData');
+        delete axios.defaults.headers.common['Authorization'];
+        setShopper(null);
+    };
+
+    const updateOnlineStatus = async (isOnline) => {
+        try {
+            await axios.put(`${API_BASE_URL}/shopper/auth/status`, { isOnline });
+            setShopper(prev => ({ ...prev, isOnline }));
+            
+            // Update local storage
+            const updatedShopper = { ...shopper, isOnline };
+            localStorage.setItem('shopperData', JSON.stringify(updatedShopper));
+        } catch (error) {
+            console.error('Failed to update online status:', error);
+        }
+    };
+
+    const value = {
+        shopper,
+        login,
+        register,
+        logout,
+        updateOnlineStatus,
+        loading
+    };
+
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
