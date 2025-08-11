@@ -92,10 +92,8 @@ export const AuthProvider = ({ children }) => {
     const updateOnlineStatus = async (isOnline) => {
         try {
             await axios.put(`${API_BASE_URL}/shopper/auth/status`, { isOnline });
-            setShopper(prev => ({ ...prev, isOnline }));
-            
-            // Update local storage
             const updatedShopper = { ...shopper, isOnline };
+            setShopper(updatedShopper);
             localStorage.setItem('shopperData', JSON.stringify(updatedShopper));
         } catch (error) {
             console.error('Failed to update online status:', error);
