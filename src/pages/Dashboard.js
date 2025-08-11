@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import './Dashboard.css';
@@ -6,7 +6,35 @@ import './Dashboard.css';
 const Dashboard = () => {
     const { shopper, logout, updateOnlineStatus } = useAuth();
     const { connected, orders, acceptOrder } = useSocket();
-    const [activeTab, setActiveTab] = useState('orders');
+    const [activeTab, setActiveTab] = useState('dashboard');
+    const [activeOrders, setActiveOrders] = useState([]);
+    const [earnings, setEarnings] = useState({
+        today: 0,
+        thisWeek: 0,
+        thisMonth: 0,
+        total: 0
+    });
+
+    useEffect(() => {
+        // Fetch active orders and earnings data
+        fetchActiveOrders();
+        fetchEarnings();
+    }, []);
+
+    const fetchActiveOrders = async () => {
+        // Mock data for now
+        setActiveOrders([]);
+    };
+
+    const fetchEarnings = async () => {
+        // Mock data for now
+        setEarnings({
+            today: 250,
+            thisWeek: 1200,
+            thisMonth: 4500,
+            total: shopper?.stats?.totalEarnings || 0
+        });
+    };
 
     const handleToggleOnline = async () => {
         await updateOnlineStatus(!shopper.isOnline);
@@ -16,34 +44,129 @@ const Dashboard = () => {
         acceptOrder(orderId);
     };
 
+    const renderDashboard = () => (
+        <div className="dashboard-overview">
+            <div className="stats-grid">
+                <div className="stat-card earnings">
+                    <div className="stat-icon">💰</div>
+                    <div className="stat-content">
+                        <h3>Today's Earnings</h3>
+                        <p className="stat-value">₹{earnings.today}</p>
+                        <span className="stat-change positive">+12% from yesterday</span>
+                    </div>
+                </div>
+                
+                <div className="stat-card orders">
+                    <div className="stat-icon">📦</div>
+                    <div className="stat-content">
+                        <h3>Active Orders</h3>
+                        <p className="stat-value">{activeOrders.length}</p>
+                        <span className="stat-change">Currently in progress</span>
+                    </div>
+                </div>
+                
+                <div className="stat-card rating">
+                    <div className="stat-icon">⭐</div>
+                    <div className="stat-content">
+                        <h3>Rating</h3>
+                        <p className="stat-value">{shopper?.rating?.average || 5.0}</p>
+                        <span className="stat-change">Based on {shopper?.rating?.count || 0} reviews</span>
+                    </div>
+                </div>
+                
+                <div className="stat-card completion">
+                    <div className="stat-icon">✅</div>
+                    <div className="stat-content">
+                        <h3>Completion Rate</h3>
+                        <p className="stat-value">98%</p>
+                        <span className="stat-change positive">Excellent performance</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="quick-actions">
+                <h3>Quick Actions</h3>
+                <div className="actions-grid">
+                    <button className="action-btn" onClick={() => setActiveTab('orders')}>
+                        <span className="action-icon">🛒</span>
+                        View Available Orders
+                    </button>
+                    <button className="action-btn" onClick={() => setActiveTab('earnings')}>
+                        <span className="action-icon">📊</span>
+                        Earnings Report
+                    </button>
+                    <button className="action-btn" onClick={() => setActiveTab('profile')}>
+                        <span className="action-icon">👤</span>
+                        Update Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
     const renderOrders = () => (
         <div className="orders-section">
-            <h3>Available Orders</h3>
+            <div className="orders-header">
+                <h3>Available Orders</h3>
+                <div className="orders-filter">
+                    <select>
+                        <option>All Orders</option>
+                        <option>High Value (₹500+)</option>
+                        <option>Nearby (2km)</option>
+                        <option>Grocery</option>
+                        <option>Pharmacy</option>
+                    </select>
+                </div>
+            </div>
+            
             {orders.length === 0 ? (
                 <div className="no-orders">
-                    <p>No orders available right now</p>
+                    <div className="no-orders-icon">📱</div>
+                    <h4>No orders available right now</h4>
                     <p>Make sure you're online to receive orders</p>
+                    <p>Orders typically increase during peak hours (11AM-2PM, 6PM-9PM)</p>
                 </div>
             ) : (
                 <div className="orders-list">
                     {orders.map(order => (
-                        <div key={order._id} className="order-card">
+                        <div key={order._id} className="order-card enhanced">
                             <div className="order-header">
-                                <h4>Order #{order._id.slice(-6)}</h4>
-                                <span className="order-amount">₹{order.totalAmount}</span>
+                                <div className="order-info">
+                                    <h4>Order #{order._id?.slice(-6)}</h4>
+                                    <span className="order-time">2 mins ago</span>
+                                </div>
+                                <div className="order-value">
+                                    <span className="order-amount">₹{order.totalAmount}</span>
+                                    <span className="estimated-earning">Earn: ₹{Math.round(order.totalAmount * 0.1)}</span>
+                                </div>
                             </div>
+                            
                             <div className="order-details">
-                                <p><strong>Shop:</strong> {order.shop?.name}</p>
-                                <p><strong>Items:</strong> {order.items?.length} items</p>
-                                <p><strong>Customer:</strong> {order.customer?.name}</p>
-                                <p><strong>Address:</strong> {order.deliveryAddress}</p>
+                                <div className="shop-info">
+                                    <span className="shop-name">🏪 {order.shop?.name || 'Local Shop'}</span>
+                                    <span className="shop-distance">📍 1.2 km away</span>
+                                </div>
+                                
+                                <div className="order-items">
+                                    <span>📦 {order.items?.length || 3} items</span>
+                                    <span>⏱️ Est. 25 mins</span>
+                                </div>
+                                
+                                <div className="customer-info">
+                                    <span>👤 {order.customer?.name || 'Customer'}</span>
+                                    <span>📍 {order.deliveryAddress || 'Delivery address'}</span>
+                                </div>
                             </div>
-                            <button 
-                                className="accept-btn"
-                                onClick={() => handleAcceptOrder(order._id)}
-                            >
-                                Accept Order
-                            </button>
+                            
+                            <div className="order-actions">
+                                <button className="view-details-btn">View Details</button>
+                                <button 
+                                    className="accept-btn"
+                                    onClick={() => handleAcceptOrder(order._id)}
+                                >
+                                    Accept Order
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -51,27 +174,102 @@ const Dashboard = () => {
         </div>
     );
 
+    const renderEarnings = () => (
+        <div className="earnings-section">
+            <div className="earnings-summary">
+                <div className="earnings-card">
+                    <h4>This Month</h4>
+                    <p className="earnings-amount">₹{earnings.thisMonth}</p>
+                    <span className="earnings-change positive">+15% from last month</span>
+                </div>
+                <div className="earnings-card">
+                    <h4>This Week</h4>
+                    <p className="earnings-amount">₹{earnings.thisWeek}</p>
+                    <span className="earnings-change positive">+8% from last week</span>
+                </div>
+                <div className="earnings-card">
+                    <h4>Today</h4>
+                    <p className="earnings-amount">₹{earnings.today}</p>
+                    <span className="earnings-change">3 orders completed</span>
+                </div>
+            </div>
+            
+            <div className="earnings-chart">
+                <h4>Weekly Performance</h4>
+                <div className="chart-placeholder">
+                    <p>📈 Earnings chart will be displayed here</p>
+                    <p>Peak days: Friday, Saturday, Sunday</p>
+                </div>
+            </div>
+        </div>
+    );
+
     const renderProfile = () => (
         <div className="profile-section">
-            <h3>Profile</h3>
-            <div className="profile-card">
-                <div className="profile-info">
-                    <h4>{shopper.name}</h4>
-                    <p>{shopper.email}</p>
-                    <p>{shopper.phone}</p>
+            <div className="profile-header">
+                <div className="profile-avatar">
+                    <img src={shopper?.profilePicture || '/default-avatar.png'} alt="Profile" />
+                    <button className="edit-avatar">📷</button>
                 </div>
-                <div className="profile-stats">
-                    <div className="stat">
-                        <span className="stat-value">{shopper.totalOrders || 0}</span>
-                        <span className="stat-label">Total Orders</span>
+                <div className="profile-info">
+                    <h3>{shopper?.name}</h3>
+                    <p>{shopper?.email}</p>
+                    <p>{shopper?.phone}</p>
+                    <div className="verification-status">
+                        {shopper?.verification?.isVerified ? (
+                            <span className="verified">✅ Verified Shopper</span>
+                        ) : (
+                            <span className="unverified">⏳ Verification Pending</span>
+                        )}
                     </div>
-                    <div className="stat">
-                        <span className="stat-value">₹{shopper.earnings || 0}</span>
-                        <span className="stat-label">Earnings</span>
+                </div>
+            </div>
+            
+            <div className="profile-stats">
+                <div className="stat">
+                    <span className="stat-value">{shopper?.stats?.totalOrders || 0}</span>
+                    <span className="stat-label">Total Orders</span>
+                </div>
+                <div className="stat">
+                    <span className="stat-value">₹{shopper?.stats?.totalEarnings || 0}</span>
+                    <span className="stat-label">Total Earnings</span>
+                </div>
+                <div className="stat">
+                    <span className="stat-value">{shopper?.rating?.average || 5.0}</span>
+                    <span className="stat-label">Rating</span>
+                </div>
+                <div className="stat">
+                    <span className="stat-value">{shopper?.stats?.avgDeliveryTime || 25} min</span>
+                    <span className="stat-label">Avg Delivery</span>
+                </div>
+            </div>
+            
+            <div className="profile-settings">
+                <h4>Settings</h4>
+                <div className="settings-grid">
+                    <div className="setting-item">
+                        <span>🚗 Vehicle Type</span>
+                        <select defaultValue={shopper?.preferences?.vehicleType || 'bike'}>
+                            <option value="bike">Bike</option>
+                            <option value="car">Car</option>
+                            <option value="bicycle">Bicycle</option>
+                            <option value="walking">Walking</option>
+                        </select>
                     </div>
-                    <div className="stat">
-                        <span className="stat-value">{shopper.rating || 5.0}</span>
-                        <span className="stat-label">Rating</span>
+                    <div className="setting-item">
+                        <span>💰 Max Order Value</span>
+                        <input 
+                            type="number" 
+                            defaultValue={shopper?.preferences?.maxOrderValue || 5000}
+                            placeholder="₹5000"
+                        />
+                    </div>
+                    <div className="setting-item">
+                        <span>📍 Working Areas</span>
+                        <input 
+                            type="text" 
+                            placeholder="Add preferred areas"
+                        />
                     </div>
                 </div>
             </div>
@@ -93,12 +291,14 @@ const Dashboard = () => {
                         <label className="switch">
                             <input 
                                 type="checkbox" 
-                                checked={shopper.isOnline}
+                                checked={shopper?.isOnline}
                                 onChange={handleToggleOnline}
                             />
                             <span className="slider"></span>
                         </label>
-                        <span>{shopper.isOnline ? 'Online' : 'Offline'}</span>
+                        <span className={shopper?.isOnline ? 'online' : 'offline'}>
+                            {shopper?.isOnline ? 'Online' : 'Offline'}
+                        </span>
                     </div>
                     <button className="logout-btn" onClick={logout}>
                         Logout
@@ -108,21 +308,39 @@ const Dashboard = () => {
 
             <nav className="dashboard-nav">
                 <button 
+                    className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('dashboard')}
+                >
+                    <span className="nav-icon">🏠</span>
+                    Dashboard
+                </button>
+                <button 
                     className={`nav-btn ${activeTab === 'orders' ? 'active' : ''}`}
                     onClick={() => setActiveTab('orders')}
                 >
+                    <span className="nav-icon">📦</span>
                     Orders ({orders.length})
+                </button>
+                <button 
+                    className={`nav-btn ${activeTab === 'earnings' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('earnings')}
+                >
+                    <span className="nav-icon">💰</span>
+                    Earnings
                 </button>
                 <button 
                     className={`nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
                     onClick={() => setActiveTab('profile')}
                 >
+                    <span className="nav-icon">👤</span>
                     Profile
                 </button>
             </nav>
 
             <main className="dashboard-content">
+                {activeTab === 'dashboard' && renderDashboard()}
                 {activeTab === 'orders' && renderOrders()}
+                {activeTab === 'earnings' && renderEarnings()}
                 {activeTab === 'profile' && renderProfile()}
             </main>
         </div>
