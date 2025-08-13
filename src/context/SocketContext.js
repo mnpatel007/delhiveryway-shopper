@@ -16,7 +16,7 @@ export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const [connected, setConnected] = useState(false);
     const [orders, setOrders] = useState([]);
-    const { shopper } = useAuth();
+    const { shopper, updateOnlineStatus } = useAuth();
 
     const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000';
 
@@ -29,7 +29,7 @@ export const SocketProvider = ({ children }) => {
             newSocket.on('connect', () => {
                 console.log('🟢 Personal Shopper connected to socket');
                 setConnected(true);
-                
+
                 // Register as personal shopper
                 newSocket.emit('registerPersonalShopper', shopper.id);
             });
@@ -43,7 +43,7 @@ export const SocketProvider = ({ children }) => {
             newSocket.on('newOrderAvailable', (orderData) => {
                 console.log('📦 New order available:', orderData);
                 setOrders(prev => [orderData, ...prev]);
-                
+
                 // Play notification sound
                 const audio = new Audio('/notification.mp3');
                 audio.play().catch(e => console.log('Audio play failed:', e));
@@ -52,11 +52,39 @@ export const SocketProvider = ({ children }) => {
             // Listen for order updates
             newSocket.on('orderUpdate', (orderData) => {
                 console.log('📝 Order update:', orderData);
-                setOrders(prev => 
-                    prev.map(order => 
+                setOrders(prev =>
+                    prev.map(order =>
                         order._id === orderData._id ? orderData : order
                     )
                 );
+            });
+
+            // Listen for admin status updates
+            newSocket.on('adminStatusUpdate', (data) => {
+                console.log('👨‍💼 Admin status update:', data);
+
+                if (data.forceStatus !== undefined) {
+                    // Admin is forcing a status change - update auth context
+                    updateOnlineStatus(data.isOnline);
+                    setConnected(data.isOnline);
+
+                    // Show notification to shopper
+                    if (window.Notification && Notification.permission === 'granted') {
+                        new Notification('Admin Status Update', {
+                            body: data.message,
+                            icon: '/logo192.png'
+                        });
+                    } else {
+                        // Fallback alert if notifications not available
+                        alert(data.message);
+                    }
+
+                    // If admin set to offline, disconnect socket
+                    if (!data.isOnline) {
+                        console.log('🔴 Admin forced offline - disconnecting socket');
+                        newSocket.disconnect();
+                    }
+                }
             });
 
             setSocket(newSocket);
@@ -75,11 +103,11 @@ export const SocketProvider = ({ children }) => {
 
     const updateOrderStatus = (orderId, status, data = {}) => {
         if (socket) {
-            socket.emit('updateOrderStatus', { 
-                orderId, 
-                status, 
+            socket.emit('updateOrderStatus', {
+                orderId,
+                status,
                 shopperId: shopper.id,
-                ...data 
+                ...data
             });
         }
     };
