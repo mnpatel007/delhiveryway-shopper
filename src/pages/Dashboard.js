@@ -50,8 +50,24 @@ const Dashboard = () => {
         await updateOnlineStatus(newStatus);
     };
 
-    const handleAcceptOrder = (orderId) => {
-        acceptOrder(orderId);
+    const handleAcceptOrder = async (orderId) => {
+        try {
+            const response = await api.post('/shopper/orders/accept', { orderId });
+            if (response.data.success || response.data.message) {
+                // Remove the accepted order from available orders
+                setActiveOrders(prev => prev.filter(order => order._id !== orderId));
+                alert('Order accepted successfully!');
+                // Refresh the orders list
+                fetchActiveOrders();
+            }
+        } catch (error) {
+            console.error('Error accepting order:', error);
+            alert('Failed to accept order. Please try again.');
+        }
+    };
+
+    const handleViewDetails = (order) => {
+        alert(`Order Details:\n\nOrder ID: ${order._id}\nCustomer: ${order.customerId?.name || 'N/A'}\nTotal: ₹${order.totalAmount}\nItems: ${order.items?.length || 0}\nDelivery: ${order.deliveryAddress?.street ? `${order.deliveryAddress.street}, ${order.deliveryAddress.city}` : 'N/A'}`);
     };
 
     if (loading) {
@@ -190,7 +206,12 @@ const Dashboard = () => {
                             </div>
                             
                             <div className="order-actions">
-                                <button className="view-details-btn">View Details</button>
+                                <button 
+                                    className="view-details-btn"
+                                    onClick={() => handleViewDetails(order)}
+                                >
+                                    View Details
+                                </button>
                                 <button 
                                     className="accept-btn"
                                     onClick={() => handleAcceptOrder(order._id)}
