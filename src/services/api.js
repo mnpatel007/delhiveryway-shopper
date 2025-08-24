@@ -21,17 +21,9 @@ api.interceptors.request.use(
         };
 
         // Add auth token if available
-        const auth = localStorage.getItem('shopperAuth');
-        if (auth) {
-            try {
-                const { token } = JSON.parse(auth);
-                if (token) {
-                    config.headers.Authorization = `Bearer ${token}`;
-                }
-            } catch (error) {
-                console.error('Error parsing auth token:', error);
-                localStorage.removeItem('shopperAuth');
-            }
+        const token = localStorage.getItem('shopperToken');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
         }
 
         console.log(`🔄 API Request: ${config.method?.toUpperCase()} ${config.url}`);
@@ -57,6 +49,8 @@ api.interceptors.response.use(
         // Handle authentication errors
         if (error.response?.status === 401) {
             console.log('🔐 Authentication error - clearing auth data');
+            localStorage.removeItem('shopperToken');
+            localStorage.removeItem('shopperData');
             localStorage.removeItem('shopperAuth');
 
             // Only redirect if not already on auth pages
