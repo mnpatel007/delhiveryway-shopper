@@ -315,7 +315,7 @@ const Dashboard = () => {
                             <input 
                                 type="checkbox" 
                                 checked={shopper?.isOnline}
-                                onChange={handleToggleOnline}
+                                onChange={handleToggleOnlineStatus}
                             />
                             <span className="slider"></span>
                         </label>
