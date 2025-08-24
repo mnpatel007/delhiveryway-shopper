@@ -215,18 +215,18 @@ const Dashboard = () => {
                         <div key={order._id} className="order-card enhanced">
                             <div className="order-header">
                                 <div className="order-info">
-                                    <h4>Order #{order._id?.slice(-6)}</h4>
+                                    <h4>Order #{order.orderNumber || order._id?.slice(-6)}</h4>
                                     <span className="order-time">2 mins ago</span>
                                 </div>
                                 <div className="order-value">
-                                    <span className="order-amount">₹{order.totalAmount}</span>
-                                    <span className="estimated-earning">Earn: ₹{Math.round(order.totalAmount * 0.1)}</span>
+                                    <span className="order-amount">₹{order.totalAmount || order.orderValue?.total || 0}</span>
+                                    <span className="estimated-earning">Earn: ₹{Math.round((order.totalAmount || order.orderValue?.total || 0) * 0.1)}</span>
                                 </div>
                             </div>
                             
                             <div className="order-details">
                                 <div className="shop-info">
-                                    <span className="shop-name">🏪 {order.shop?.name || 'Local Shop'}</span>
+                                    <span className="shop-name">🏪 {order.shopId?.name || order.shop?.name || 'Local Shop'}</span>
                                     <span className="shop-distance">📍 1.2 km away</span>
                                 </div>
                                 
@@ -236,8 +236,8 @@ const Dashboard = () => {
                                 </div>
                                 
                                 <div className="customer-info">
-                                    <span>👤 {order.customer?.name || 'Customer'}</span>
-                                    <span>📍 {order.deliveryAddress?.street ? `${order.deliveryAddress.street}, ${order.deliveryAddress.city}` : 'Delivery address'}</span>
+                                    <span>👤 {order.customerId?.name || order.customer?.name || 'Customer'}</span>
+                                    <span>📍 {order.deliveryAddress?.street ? `${order.deliveryAddress.street}, ${order.deliveryAddress.city}` : '111 Eastview Gate, Brampton'}</span>
                                 </div>
                             </div>
                             
