@@ -127,7 +127,7 @@ const OrderManagement = () => {
                     status: 'bill_uploaded',
                     billData: formData
                 });
-                fetchOrders();
+                fetchShopperOrders();
                 alert('Bill uploaded successfully!');
             } catch (error) {
                 console.error('Error uploading bill:', error);
@@ -224,7 +224,7 @@ const OrderManagement = () => {
                         />
                         <button 
                             className="action-btn primary"
-                            onClick={() => handleUploadBill(order._id)}
+                            onClick={() => handleBillUpload(order._id)}
                         >
                             Upload Bill & Complete Shopping
                         </button>
