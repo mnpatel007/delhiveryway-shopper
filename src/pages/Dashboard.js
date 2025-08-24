@@ -52,17 +52,22 @@ const Dashboard = () => {
 
     const handleAcceptOrder = async (orderId) => {
         try {
+            console.log('Attempting to accept order:', orderId);
             const response = await api.post('/shopper/orders/accept', { orderId });
-            if (response.data.success || response.data.message) {
+            console.log('Accept order response:', response.data);
+            
+            if (response.data.success !== false) {
                 // Remove the accepted order from available orders
                 setActiveOrders(prev => prev.filter(order => order._id !== orderId));
-                alert('Order accepted successfully!');
-                // Refresh the orders list
-                fetchActiveOrders();
+                alert('Order accepted successfully! Check Order Management tab to track progress.');
+                // Switch to Order Management tab to show the accepted order
+                setActiveTab('manage-orders');
+            } else {
+                alert('Failed to accept order: ' + (response.data.message || 'Unknown error'));
             }
         } catch (error) {
             console.error('Error accepting order:', error);
-            alert('Failed to accept order. Please try again.');
+            alert('Failed to accept order: ' + (error.response?.data?.message || error.message));
         }
     };
 

@@ -20,9 +20,9 @@ const OrderManagement = () => {
 
     const fetchShopperOrders = async () => {
         try {
-            const response = await api.get('/shopper/orders');
-            if (response.data.success) {
-                setOrders(response.data.data.orders);
+            const response = await api.get('/shopper/orders/active');
+            if (response.data.orders) {
+                setOrders(response.data.orders);
             }
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -33,7 +33,8 @@ const OrderManagement = () => {
 
     const updateOrderStatus = async (orderId, status, additionalData = {}) => {
         try {
-            const response = await api.put(`/orders/${orderId}/status`, {
+            const response = await api.put(`/shopper/orders/status`, {
+                orderId,
                 status,
                 ...additionalData
             });
@@ -123,7 +124,8 @@ const OrderManagement = () => {
             formData.append('billAmount', billAmount);
 
             try {
-                await api.put(`/orders/${orderId}/status`, {
+                await api.put(`/shopper/orders/status`, {
+                    orderId,
                     status: 'bill_uploaded',
                     billData: formData
                 });
