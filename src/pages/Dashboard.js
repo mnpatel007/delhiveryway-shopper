@@ -16,12 +16,28 @@ const Dashboard = () => {
         thisMonth: 0,
         total: 0
     });
+    const [orderHistory, setOrderHistory] = useState([]);
+    const [historyLoading, setHistoryLoading] = useState(true);
 
     useEffect(() => {
         // Fetch active orders and earnings data
         fetchActiveOrders();
         fetchEarnings();
+        fetchOrderHistory();
     }, []);
+
+    const fetchOrderHistory = async () => {
+        try {
+            const response = await api.get('/shopper/orders/completed');
+            if (response.data.success) {
+                setOrderHistory(response.data.data.orders || []);
+            }
+        } catch (error) {
+            console.error('Error fetching order history:', error);
+        } finally {
+            setHistoryLoading(false);
+        }
+    };
 
     const fetchActiveOrders = async () => {
         try {
@@ -246,92 +262,70 @@ const Dashboard = () => {
         </div>
     );
 
-    const renderEarnings = () => {
-        const [orderHistory, setOrderHistory] = useState([]);
-        const [loading, setLoading] = useState(true);
-
-        useEffect(() => {
-            fetchOrderHistory();
-        }, []);
-
-        const fetchOrderHistory = async () => {
-            try {
-                const response = await api.get('/shopper/orders/completed');
-                if (response.data.success) {
-                    setOrderHistory(response.data.data.orders || []);
-                }
-            } catch (error) {
-                console.error('Error fetching order history:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        return (
-            <div className="earnings-section">
-                <div className="earnings-summary">
-                    <div className="earnings-card">
-                        <h4>This Month</h4>
-                        <p className="earnings-amount">₹{earnings.thisMonth}</p>
-                        <span className="earnings-change positive">+15% from last month</span>
-                    </div>
-                    <div className="earnings-card">
-                        <h4>This Week</h4>
-                        <p className="earnings-amount">₹{earnings.thisWeek}</p>
-                        <span className="earnings-change positive">+8% from last week</span>
-                    </div>
-                    <div className="earnings-card">
-                        <h4>Today</h4>
-                        <p className="earnings-amount">₹{earnings.today}</p>
-                        <span className="earnings-change">Orders completed today</span>
-                    </div>
+    const renderEarnings = () => (
+        <div className="earnings-section">
+            <div className="earnings-summary">
+                <div className="earnings-card">
+                    <h4>This Month</h4>
+                    <p className="earnings-amount">₹{earnings.thisMonth}</p>
+                    <span className="earnings-change positive">+15% from last month</span>
                 </div>
-                
-                <div className="order-history">
-                    <h4>Order History & Earnings</h4>
-                    {loading ? (
-                        <div className="loading">Loading order history...</div>
-                    ) : orderHistory.length === 0 ? (
-                        <div className="no-history">
-                            <p>No completed orders yet</p>
-                        </div>
-                    ) : (
-                        <div className="history-list">
-                            {orderHistory.map(order => {
-                                const earning = Math.round((order.totalAmount || 0) * 0.1); // 10% commission
-                                const deliveryAddress = order.deliveryAddress;
-                                const addressStr = typeof deliveryAddress === 'string' 
-                                    ? deliveryAddress 
-                                    : deliveryAddress 
-                                        ? `${deliveryAddress.street || ''}, ${deliveryAddress.city || ''}`.trim().replace(/^,/, '') 
-                                        : 'N/A';
-                                
-                                return (
-                                    <div key={order._id} className="history-item">
-                                        <div className="order-info">
-                                            <div className="order-id">Order #{order._id?.slice(-6)}</div>
-                                            <div className="order-date">
-                                                {new Date(order.deliveredAt || order.updatedAt).toLocaleDateString()}
-                                            </div>
-                                        </div>
-                                        <div className="order-details">
-                                            <div className="customer">👤 {order.customerId?.name || 'Customer'}</div>
-                                            <div className="delivery-address">📍 {addressStr}</div>
-                                            <div className="shop">🏪 {order.shopId?.name || 'Shop'}</div>
-                                        </div>
-                                        <div className="order-earnings">
-                                            <div className="order-value">Order: ₹{order.totalAmount || 0}</div>
-                                            <div className="earning-amount">Earned: ₹{earning}</div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
+                <div className="earnings-card">
+                    <h4>This Week</h4>
+                    <p className="earnings-amount">₹{earnings.thisWeek}</p>
+                    <span className="earnings-change positive">+8% from last week</span>
+                </div>
+                <div className="earnings-card">
+                    <h4>Today</h4>
+                    <p className="earnings-amount">₹{earnings.today}</p>
+                    <span className="earnings-change">Orders completed today</span>
                 </div>
             </div>
-        );
-    };
+            
+            <div className="order-history">
+                <h4>Order History & Earnings</h4>
+                {historyLoading ? (
+                    <div className="loading">Loading order history...</div>
+                ) : orderHistory.length === 0 ? (
+                    <div className="no-history">
+                        <p>No completed orders yet</p>
+                    </div>
+                ) : (
+                    <div className="history-list">
+                        {orderHistory.map(order => {
+                            const earning = Math.round((order.totalAmount || 0) * 0.1); // 10% commission
+                            const deliveryAddress = order.deliveryAddress;
+                            const addressStr = typeof deliveryAddress === 'string' 
+                                ? deliveryAddress 
+                                : deliveryAddress 
+                                    ? `${deliveryAddress.street || ''}, ${deliveryAddress.city || ''}`.trim().replace(/^,/, '') 
+                                    : 'N/A';
+                            
+                            return (
+                                <div key={order._id} className="history-item">
+                                    <div className="order-info">
+                                        <div className="order-id">Order #{order._id?.slice(-6)}</div>
+                                        <div className="order-date">
+                                            {new Date(order.deliveredAt || order.updatedAt).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                    <div className="order-details">
+                                        <div className="customer">👤 {order.customerId?.name || 'Customer'}</div>
+                                        <div className="delivery-address">📍 {addressStr}</div>
+                                        <div className="shop">🏪 {order.shopId?.name || 'Shop'}</div>
+                                    </div>
+                                    <div className="order-earnings">
+                                        <div className="order-value">Order: ₹{order.totalAmount || 0}</div>
+                                        <div className="earning-amount">Earned: ₹{earning}</div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 
     const renderProfile = () => (
         <div className="profile-section">
