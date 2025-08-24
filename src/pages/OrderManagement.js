@@ -21,7 +21,10 @@ const OrderManagement = () => {
     const fetchShopperOrders = async () => {
         try {
             const response = await api.get('/shopper/orders/active');
-            if (response.data.orders) {
+            console.log('Fetched orders response:', response.data);
+            if (response.data.success && response.data.orders) {
+                setOrders(response.data.orders);
+            } else if (response.data.orders) {
                 setOrders(response.data.orders);
             }
         } catch (error) {
@@ -33,19 +36,25 @@ const OrderManagement = () => {
 
     const updateOrderStatus = async (orderId, status, additionalData = {}) => {
         try {
+            console.log('Updating order status:', { orderId, status, additionalData });
             const response = await api.put(`/shopper/orders/status`, {
                 orderId,
                 status,
                 ...additionalData
             });
             
-            if (response.data.success) {
+            console.log('Update response:', response.data);
+            
+            if (response.data.success !== false) {
                 fetchShopperOrders();
+                alert(`Order status updated to: ${status}`);
                 return true;
+            } else {
+                alert('Failed to update order status: ' + (response.data.message || 'Unknown error'));
             }
         } catch (error) {
             console.error('Error updating order status:', error);
-            alert(error.response?.data?.message || 'Failed to update order status');
+            alert('Failed to update order status: ' + (error.response?.data?.message || error.message));
         }
         return false;
     };
