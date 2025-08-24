@@ -185,7 +185,7 @@ const Dashboard = () => {
                                 
                                 <div className="customer-info">
                                     <span>👤 {order.customer?.name || 'Customer'}</span>
-                                    <span>📍 {order.deliveryAddress || 'Delivery address'}</span>
+                                    <span>📍 {order.deliveryAddress?.street ? `${order.deliveryAddress.street}, ${order.deliveryAddress.city}` : 'Delivery address'}</span>
                                 </div>
                             </div>
                             
