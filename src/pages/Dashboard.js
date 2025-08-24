@@ -44,6 +44,7 @@ const Dashboard = () => {
             const response = await api.get('/shopper/orders/available');
             if (response.data.success) {
                 setActiveOrders(response.data.data.orders || []);
+                console.log('Available orders fetched:', response.data.data.orders?.length || 0);
             }
         } catch (error) {
             console.error('Error fetching available orders:', error);
