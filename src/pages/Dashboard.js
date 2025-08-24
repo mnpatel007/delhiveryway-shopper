@@ -5,7 +5,7 @@ import OrderManagement from './OrderManagement';
 import './Dashboard.css';
 
 const Dashboard = () => {
-    const { shopper, logout, updateOnlineStatus } = useAuth();
+    const { shopper, logout, updateOnlineStatus, loading } = useAuth();
     const { connected, orders, acceptOrder } = useSocket();
     const [activeTab, setActiveTab] = useState('dashboard');
     const [activeOrders, setActiveOrders] = useState([]);
@@ -37,13 +37,35 @@ const Dashboard = () => {
         });
     };
 
-    const handleToggleOnline = async () => {
-        await updateOnlineStatus(!shopper.isOnline);
+    const handleToggleOnlineStatus = async () => {
+        const newStatus = !shopper?.isOnline;
+        await updateOnlineStatus(newStatus);
     };
 
     const handleAcceptOrder = (orderId) => {
         acceptOrder(orderId);
     };
+
+    if (loading) {
+        return (
+            <div className="dashboard-loading">
+                <div className="loading-spinner"></div>
+                <p>Loading dashboard...</p>
+            </div>
+        );
+    }
+
+    if (!shopper) {
+        return (
+            <div className="dashboard-error">
+                <h2>Authentication Required</h2>
+                <p>Please log in to access the shopper dashboard.</p>
+                <button onClick={() => window.location.href = '/login'}>
+                    Go to Login
+                </button>
+            </div>
+        );
+    }
 
     const renderDashboard = () => (
         <div className="dashboard-overview">

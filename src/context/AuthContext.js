@@ -18,18 +18,29 @@ export const AuthProvider = ({ children }) => {
     const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
     useEffect(() => {
-        const token = localStorage.getItem('shopperToken');
-        if (token) {
-            // Set default authorization header
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            
-            // Get shopper data from token or make API call
+        const checkAuth = () => {
+            const token = localStorage.getItem('shopperToken');
             const shopperData = localStorage.getItem('shopperData');
-            if (shopperData) {
-                setShopper(JSON.parse(shopperData));
+            
+            if (token && shopperData) {
+                try {
+                    // Set default authorization header
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                    
+                    // Parse and set shopper data
+                    const parsedShopper = JSON.parse(shopperData);
+                    setShopper(parsedShopper);
+                } catch (error) {
+                    console.error('Error parsing shopper data:', error);
+                    // Clear invalid data
+                    localStorage.removeItem('shopperToken');
+                    localStorage.removeItem('shopperData');
+                }
             }
-        }
-        setLoading(false);
+            setLoading(false);
+        };
+        
+        checkAuth();
     }, []);
 
     const login = async (email, password) => {
