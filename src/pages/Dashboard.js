@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
+import api from '../services/api';
 import OrderManagement from './OrderManagement';
 import './Dashboard.css';
 
@@ -23,8 +24,15 @@ const Dashboard = () => {
     }, []);
 
     const fetchActiveOrders = async () => {
-        // Mock data for now
-        setActiveOrders([]);
+        try {
+            const response = await api.get('/shopper/orders/available');
+            if (response.data.success) {
+                setActiveOrders(response.data.data.orders || []);
+            }
+        } catch (error) {
+            console.error('Error fetching available orders:', error);
+            setActiveOrders([]);
+        }
     };
 
     const fetchEarnings = async () => {
@@ -142,7 +150,7 @@ const Dashboard = () => {
                 </div>
             </div>
             
-            {orders.length === 0 ? (
+            {activeOrders.length === 0 ? (
                 <div className="no-orders">
                     <div className="no-orders-icon">📱</div>
                     <h4>No orders available right now</h4>
@@ -151,7 +159,7 @@ const Dashboard = () => {
                 </div>
             ) : (
                 <div className="orders-list">
-                    {orders.map(order => (
+                    {activeOrders.map(order => (
                         <div key={order._id} className="order-card enhanced">
                             <div className="order-header">
                                 <div className="order-info">
