@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
+import OrderManagement from './OrderManagement';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -319,7 +320,14 @@ const Dashboard = () => {
                     onClick={() => setActiveTab('orders')}
                 >
                     <span className="nav-icon">📦</span>
-                    Orders ({orders.length})
+                    Available Orders ({orders.length})
+                </button>
+                <button 
+                    className={`nav-btn ${activeTab === 'manage-orders' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('manage-orders')}
+                >
+                    <span className="nav-icon">🛠️</span>
+                    Manage Orders
                 </button>
                 <button 
                     className={`nav-btn ${activeTab === 'earnings' ? 'active' : ''}`}
@@ -340,6 +348,7 @@ const Dashboard = () => {
             <main className="dashboard-content">
                 {activeTab === 'dashboard' && renderDashboard()}
                 {activeTab === 'orders' && renderOrders()}
+                {activeTab === 'manage-orders' && <OrderManagement />}
                 {activeTab === 'earnings' && renderEarnings()}
                 {activeTab === 'profile' && renderProfile()}
             </main>
