@@ -128,22 +128,26 @@ const OrderManagement = () => {
             const billAmount = prompt('Enter the total bill amount:');
             if (!billAmount) return;
 
-            const formData = new FormData();
-            formData.append('billImage', file);
-            formData.append('billAmount', billAmount);
-
-            try {
-                await api.put(`/shopper/orders/status`, {
-                    orderId,
-                    status: 'bill_uploaded',
-                    billData: formData
-                });
-                fetchShopperOrders();
-                alert('Bill uploaded successfully!');
-            } catch (error) {
-                console.error('Error uploading bill:', error);
-                alert('Failed to upload bill. Please try again.');
-            }
+            // Convert file to base64 for JSON transmission
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Image = e.target.result;
+                
+                try {
+                    await api.put(`/shopper/orders/status`, {
+                        orderId,
+                        status: 'bill_uploaded',
+                        billPhoto: base64Image,
+                        billAmount: parseFloat(billAmount)
+                    });
+                    fetchShopperOrders();
+                    alert('Bill uploaded successfully!');
+                } catch (error) {
+                    console.error('Error uploading bill:', error);
+                    alert('Failed to upload bill. Please try again.');
+                }
+            };
+            reader.readAsDataURL(file);
         };
         fileInput.click();
     };
