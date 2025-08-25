@@ -312,9 +312,9 @@ const Dashboard = () => {
                 ) : (
                     <div className="history-list">
                         {orderHistory.map(order => {
-                            // Use actualBill.amount if available, otherwise orderValue.total
+                            // Use shopperCommission if available, otherwise deliveryFee
                             const orderAmount = order.actualBill?.amount || order.orderValue?.total || 0;
-                            const earning = Math.round(orderAmount * 0.1); // 10% commission
+                            const earning = order.shopperCommission || order.orderValue?.deliveryFee || 0;
                             const deliveryAddress = order.deliveryAddress;
                             const addressStr = typeof deliveryAddress === 'string' 
                                 ? deliveryAddress 
