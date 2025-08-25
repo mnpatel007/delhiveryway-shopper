@@ -16,6 +16,7 @@ const Dashboard = () => {
         thisMonth: 0,
         total: 0
     });
+    const [earningsLoading, setEarningsLoading] = useState(true);
     const [orderHistory, setOrderHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(true);
 
@@ -54,11 +55,16 @@ const Dashboard = () => {
 
     const fetchEarnings = async () => {
         try {
+            setEarningsLoading(true);
+            console.log('Fetching earnings for shopper:', shopper?._id);
             const response = await api.get('/shopper/earnings');
-            if (response.data.success) {
+            console.log('Earnings response:', response.data);
+            
+            if (response.data.success && response.data.data) {
                 setEarnings(response.data.data);
             } else {
-                // Fallback to actual calculations
+                console.log('No earnings data, using fallback');
+                // Fallback to shopper stats or zero
                 setEarnings({
                     today: 0,
                     thisWeek: 0,
@@ -68,12 +74,16 @@ const Dashboard = () => {
             }
         } catch (error) {
             console.error('Error fetching earnings:', error);
+            console.error('Error details:', error.response?.data);
+            // Set fallback values on error
             setEarnings({
                 today: 0,
                 thisWeek: 0,
                 thisMonth: 0,
                 total: shopper?.stats?.totalEarnings || 0
             });
+        } finally {
+            setEarningsLoading(false);
         }
     };
 
@@ -135,7 +145,9 @@ const Dashboard = () => {
                     <div className="stat-icon">💰</div>
                     <div className="stat-content">
                         <h3>Today's Earnings</h3>
-                        <p className="stat-value">₹{earnings.today}</p>
+                        <p className="stat-value">
+                            {earningsLoading ? '...' : `₹${earnings.today || 0}`}
+                        </p>
                         <span className="stat-change positive">+12% from yesterday</span>
                     </div>
                 </div>
@@ -143,9 +155,9 @@ const Dashboard = () => {
                 <div className="stat-card orders">
                     <div className="stat-icon">📦</div>
                     <div className="stat-content">
-                        <h3>Active Orders</h3>
+                        <h3>Available Orders</h3>
                         <p className="stat-value">{activeOrders.length}</p>
-                        <span className="stat-change">Currently in progress</span>
+                        <span className="stat-change">Ready to accept</span>
                     </div>
                 </div>
                 
@@ -268,17 +280,23 @@ const Dashboard = () => {
             <div className="earnings-summary">
                 <div className="earnings-card">
                     <h4>This Month</h4>
-                    <p className="earnings-amount">₹{earnings.thisMonth}</p>
+                    <p className="earnings-amount">
+                        {earningsLoading ? '...' : `₹${earnings.thisMonth || 0}`}
+                    </p>
                     <span className="earnings-change positive">+15% from last month</span>
                 </div>
                 <div className="earnings-card">
                     <h4>This Week</h4>
-                    <p className="earnings-amount">₹{earnings.thisWeek}</p>
+                    <p className="earnings-amount">
+                        {earningsLoading ? '...' : `₹${earnings.thisWeek || 0}`}
+                    </p>
                     <span className="earnings-change positive">+8% from last week</span>
                 </div>
                 <div className="earnings-card">
                     <h4>Today</h4>
-                    <p className="earnings-amount">₹{earnings.today}</p>
+                    <p className="earnings-amount">
+                        {earningsLoading ? '...' : `₹${earnings.today || 0}`}
+                    </p>
                     <span className="earnings-change">Orders completed today</span>
                 </div>
             </div>
@@ -443,7 +461,7 @@ const Dashboard = () => {
                     onClick={() => setActiveTab('orders')}
                 >
                     <span className="nav-icon">📦</span>
-                    Available Orders ({orders.length})
+                    Available Orders ({activeOrders.length})
                 </button>
                 <button 
                     className={`nav-btn ${activeTab === 'manage-orders' ? 'active' : ''}`}
