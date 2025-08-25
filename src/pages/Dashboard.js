@@ -312,7 +312,9 @@ const Dashboard = () => {
                 ) : (
                     <div className="history-list">
                         {orderHistory.map(order => {
-                            const earning = Math.round((order.totalAmount || 0) * 0.1); // 10% commission
+                            // Use actualBill.amount if available, otherwise orderValue.total
+                            const orderAmount = order.actualBill?.amount || order.orderValue?.total || 0;
+                            const earning = Math.round(orderAmount * 0.1); // 10% commission
                             const deliveryAddress = order.deliveryAddress;
                             const addressStr = typeof deliveryAddress === 'string' 
                                 ? deliveryAddress 
@@ -334,7 +336,7 @@ const Dashboard = () => {
                                         <div className="shop">🏪 {order.shopId?.name || 'Shop'}</div>
                                     </div>
                                     <div className="order-earnings">
-                                        <div className="order-value">Order: ₹{order.totalAmount || 0}</div>
+                                        <div className="order-value">Order: ₹{orderAmount}</div>
                                         <div className="earning-amount">Earned: ₹{earning}</div>
                                     </div>
                                 </div>
