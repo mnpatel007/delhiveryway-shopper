@@ -11,8 +11,7 @@ const OrderManagement = () => {
     const [revisionMode, setRevisionMode] = useState(false);
     const [revisedItems, setRevisedItems] = useState([]);
     const [shopperNotes, setShopperNotes] = useState('');
-    const [billPhoto, setBillPhoto] = useState(null);
-    const [billAmount, setBillAmount] = useState('');
+
 
     useEffect(() => {
         fetchShopperOrders();
@@ -42,9 +41,9 @@ const OrderManagement = () => {
                 status,
                 ...additionalData
             });
-            
+
             console.log('Update response:', response.data);
-            
+
             if (response.data.success !== false) {
                 fetchShopperOrders();
                 alert(`Order status updated to: ${status}`);
@@ -87,18 +86,24 @@ const OrderManagement = () => {
     };
 
     const handleItemRevision = (itemId, field, value) => {
-        setRevisedItems(prev => prev.map(item => 
+        setRevisedItems(prev => prev.map(item =>
             item.itemId === itemId ? { ...item, [field]: value } : item
         ));
     };
 
     const submitRevision = async () => {
         try {
+            console.log('Submitting revision for order:', activeOrder._id);
+            console.log('Revised items:', revisedItems);
+            console.log('Shopper notes:', shopperNotes);
+
             const response = await api.put(`/orders/${activeOrder._id}/revise`, {
                 revisedItems,
                 shopperNotes
             });
-            
+
+            console.log('Revision response:', response.data);
+
             if (response.data.success) {
                 setRevisionMode(false);
                 setActiveOrder(null);
@@ -106,9 +111,12 @@ const OrderManagement = () => {
                 setShopperNotes('');
                 fetchShopperOrders();
                 alert('Order revision submitted successfully!');
+            } else {
+                throw new Error(response.data.message || 'Failed to submit revision');
             }
         } catch (error) {
             console.error('Error submitting revision:', error);
+            console.error('Error details:', error.response?.data);
             alert(error.response?.data?.message || 'Failed to submit revision');
         }
     };
@@ -117,39 +125,18 @@ const OrderManagement = () => {
         updateOrderStatus(orderId, 'final_shopping');
     };
 
-    const handleBillUpload = async (orderId) => {
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = 'image/*';
-        fileInput.onchange = async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const billAmount = prompt('Enter the total bill amount:');
-            if (!billAmount) return;
-
-            // Convert file to base64 for JSON transmission
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                const base64Image = e.target.result;
-                
-                try {
-                    await api.put(`/shopper/orders/status`, {
-                        orderId,
-                        status: 'bill_uploaded',
-                        billPhoto: base64Image,
-                        billAmount: parseFloat(billAmount)
-                    });
-                    fetchShopperOrders();
-                    alert('Bill uploaded successfully!');
-                } catch (error) {
-                    console.error('Error uploading bill:', error);
-                    alert('Failed to upload bill. Please try again.');
-                }
-            };
-            reader.readAsDataURL(file);
-        };
-        fileInput.click();
+    const handleCompleteOrder = async (orderId) => {
+        try {
+            await api.put(`/shopper/orders/status`, {
+                orderId,
+                status: 'out_for_delivery'
+            });
+            fetchShopperOrders();
+            alert('Order marked as ready for delivery!');
+        } catch (error) {
+            console.error('Error completing order:', error);
+            alert('Failed to complete order. Please try again.');
+        }
     };
 
     const handleOutForDelivery = (orderId) => {
@@ -164,44 +151,44 @@ const OrderManagement = () => {
         switch (order.status) {
             case 'pending_shopper':
                 return (
-                    <button 
+                    <button
                         className="action-btn accept"
                         onClick={() => handleAcceptOrder(order._id)}
                     >
                         Accept Order
                     </button>
                 );
-            
+
             case 'accepted_by_shopper':
                 return (
-                    <button 
+                    <button
                         className="action-btn primary"
                         onClick={() => handleArrivedAtShop(order._id)}
                     >
                         I've Arrived at Shop
                     </button>
                 );
-            
+
             case 'shopper_at_shop':
                 return (
-                    <button 
+                    <button
                         className="action-btn primary"
                         onClick={() => handleStartShopping(order._id)}
                     >
                         Start Shopping
                     </button>
                 );
-            
+
             case 'shopping_in_progress':
                 return (
                     <div className="action-group">
-                        <button 
+                        <button
                             className="action-btn warning"
                             onClick={() => handleReviseOrder(order)}
                         >
                             Revise Order (Items Unavailable)
                         </button>
-                        <button 
+                        <button
                             className="action-btn success"
                             onClick={() => handleFinalShopping(order._id)}
                         >
@@ -209,63 +196,37 @@ const OrderManagement = () => {
                         </button>
                     </div>
                 );
-            
+
             case 'customer_approved_revision':
                 return (
-                    <button 
+                    <button
                         className="action-btn primary"
                         onClick={() => handleFinalShopping(order._id)}
                     >
                         Start Final Shopping
                     </button>
                 );
-            
+
             case 'final_shopping':
                 return (
-                    <div className="bill-upload-section">
-                        <h4>Upload Bill</h4>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => setBillPhoto(e.target.files[0])}
-                            className="file-input"
-                        />
-                        <input
-                            type="number"
-                            placeholder="Total bill amount"
-                            value={billAmount}
-                            onChange={(e) => setBillAmount(e.target.value)}
-                            className="amount-input"
-                        />
-                        <button 
-                            className="action-btn primary"
-                            onClick={() => handleBillUpload(order._id)}
-                        >
-                            Upload Bill & Complete Shopping
-                        </button>
-                    </div>
-                );
-            
-            case 'bill_approved':
-                return (
-                    <button 
+                    <button
                         className="action-btn primary"
-                        onClick={() => handleOutForDelivery(order._id)}
+                        onClick={() => handleCompleteOrder(order._id)}
                     >
-                        Start Delivery
+                        Complete Order & Start Delivery
                     </button>
                 );
-            
+
             case 'out_for_delivery':
                 return (
-                    <button 
+                    <button
                         className="action-btn success"
                         onClick={() => handleDelivered(order._id)}
                     >
                         Mark as Delivered & Collect Payment
                     </button>
                 );
-            
+
             default:
                 return null;
         }
@@ -281,12 +242,10 @@ const OrderManagement = () => {
             'customer_reviewing_revision': { text: 'Customer Reviewing', class: 'warning' },
             'customer_approved_revision': { text: 'Revision Approved', class: 'success' },
             'final_shopping': { text: 'Final Shopping', class: 'in-progress' },
-            'bill_uploaded': { text: 'Bill Uploaded', class: 'warning' },
-            'bill_approved': { text: 'Bill Approved', class: 'success' },
             'out_for_delivery': { text: 'Out for Delivery', class: 'delivery' },
             'delivered': { text: 'Delivered', class: 'completed' }
         };
-        
+
         const config = statusConfig[status] || { text: status, class: 'default' };
         return <span className={`status-badge ${config.class}`}>{config.text}</span>;
     };
@@ -310,7 +269,7 @@ const OrderManagement = () => {
                         <h2>Revise Order #{activeOrder.orderNumber}</h2>
                         <p>Update quantities and mark unavailable items</p>
                     </div>
-                    
+
                     <div className="revision-content">
                         {revisedItems.map((item, index) => (
                             <div key={item.itemId} className="revision-item">
@@ -318,7 +277,7 @@ const OrderManagement = () => {
                                     <h4>{item.name}</h4>
                                     <p>Original: {item.originalQuantity} × ₹{item.originalPrice}</p>
                                 </div>
-                                
+
                                 <div className="revision-controls">
                                     <label>
                                         <input
@@ -328,7 +287,7 @@ const OrderManagement = () => {
                                         />
                                         Available
                                     </label>
-                                    
+
                                     {item.isAvailable && (
                                         <>
                                             <div className="input-group">
@@ -340,7 +299,7 @@ const OrderManagement = () => {
                                                     onChange={(e) => handleItemRevision(item.itemId, 'quantity', parseInt(e.target.value))}
                                                 />
                                             </div>
-                                            
+
                                             <div className="input-group">
                                                 <label>Price:</label>
                                                 <input
@@ -352,7 +311,7 @@ const OrderManagement = () => {
                                             </div>
                                         </>
                                     )}
-                                    
+
                                     <div className="input-group">
                                         <label>Notes:</label>
                                         <input
@@ -365,7 +324,7 @@ const OrderManagement = () => {
                                 </div>
                             </div>
                         ))}
-                        
+
                         <div className="revision-notes">
                             <label>Overall Notes for Customer:</label>
                             <textarea
@@ -375,15 +334,15 @@ const OrderManagement = () => {
                                 rows="3"
                             />
                         </div>
-                        
+
                         <div className="revision-actions">
-                            <button 
+                            <button
                                 className="action-btn secondary"
                                 onClick={() => setRevisionMode(false)}
                             >
                                 Cancel
                             </button>
-                            <button 
+                            <button
                                 className="action-btn primary"
                                 onClick={submitRevision}
                             >
@@ -402,7 +361,7 @@ const OrderManagement = () => {
                 <h2>Order Management</h2>
                 <p>Manage your assigned orders through their complete lifecycle</p>
             </div>
-            
+
             {orders.length === 0 ? (
                 <div className="no-orders">
                     <div className="no-orders-icon">📦</div>
@@ -423,13 +382,13 @@ const OrderManagement = () => {
                                     <span className="earning">Earn: ₹{order.shopperCommission || Math.round((order.orderValue?.total || 0) * 0.1)}</span>
                                 </div>
                             </div>
-                            
+
                             <div className="order-details">
                                 <div className="customer-info">
                                     <p><strong>Customer:</strong> {order.customerId?.name}</p>
                                     <p><strong>Phone:</strong> {order.customerId?.phone}</p>
                                 </div>
-                                
+
                                 <div className="delivery-info">
                                     <p><strong>Delivery Address:</strong></p>
                                     <p>{order.deliveryAddress?.street}, {order.deliveryAddress?.city}</p>
@@ -437,13 +396,13 @@ const OrderManagement = () => {
                                         <p><em>Instructions: {order.deliveryAddress.instructions}</em></p>
                                     )}
                                 </div>
-                                
+
                                 <div className="items-info">
                                     <p><strong>Items ({order.items?.length || 0}):</strong></p>
                                     <ul>
                                         {order.items?.slice(0, 3).map((item, index) => (
                                             <li key={index}>
-                                                {item.name} × {item.revisedQuantity || item.quantity} 
+                                                {item.name} × {item.revisedQuantity || item.quantity}
                                                 {!item.isAvailable && <span className="unavailable"> (Unavailable)</span>}
                                             </li>
                                         ))}
@@ -451,28 +410,24 @@ const OrderManagement = () => {
                                     </ul>
                                 </div>
                             </div>
-                            
+
                             <div className="order-actions">
                                 {getStatusActions(order)}
                             </div>
-                            
+
                             {order.status === 'shopper_revised_order' && (
                                 <div className="revision-status">
                                     <p>✅ Revision sent to customer. Waiting for approval.</p>
                                 </div>
                             )}
-                            
+
                             {order.status === 'customer_reviewing_revision' && (
                                 <div className="revision-status">
                                     <p>⏳ Customer is reviewing your revision.</p>
                                 </div>
                             )}
-                            
-                            {order.status === 'bill_uploaded' && (
-                                <div className="revision-status">
-                                    <p>📄 Bill uploaded. Waiting for customer approval.</p>
-                                </div>
-                            )}
+
+
                         </div>
                     ))}
                 </div>
