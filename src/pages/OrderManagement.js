@@ -415,7 +415,7 @@ const OrderManagement = () => {
                                 {getStatusActions(order)}
                             </div>
 
-                            {order.status === 'shopper_revised_order' && (
+                            {order.status === 'customer_reviewing_revision' && (
                                 <div className="revision-status">
                                     <p>✅ Revision sent to customer. Waiting for approval.</p>
                                 </div>
