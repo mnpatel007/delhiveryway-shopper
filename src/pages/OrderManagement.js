@@ -386,7 +386,7 @@ const OrderManagement = () => {
                             <div className="order-details">
                                 <div className="customer-info">
                                     <p><strong>Customer:</strong> {order.customerId?.name}</p>
-                                    <p><strong>Phone:</strong> {order.customerId?.phone}</p>
+                                    <p><strong>Phone:</strong> {order.deliveryAddress?.contactPhone || order.customerId?.phone}</p>
                                 </div>
 
                                 <div className="delivery-info">
