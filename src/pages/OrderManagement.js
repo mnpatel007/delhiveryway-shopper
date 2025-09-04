@@ -379,7 +379,7 @@ const OrderManagement = () => {
                                 </div>
                                 <div className="order-value">
                                     <span className="amount">₹{order.orderValue?.total?.toFixed(2) || '0.00'}</span>
-                                    <span className="earning">Earn: ₹{order.shopperCommission || Math.round((order.orderValue?.total || 0) * 0.1)}</span>
+                                    <span className="earning">Earn: ₹{order.shopperCommission || order.orderValue?.deliveryFee || 0}</span>
                                 </div>
                             </div>
 

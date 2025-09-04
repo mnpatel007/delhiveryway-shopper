@@ -59,7 +59,7 @@ const Dashboard = () => {
             console.log('Fetching earnings for shopper:', shopper?._id);
             const response = await api.get('/shopper/earnings');
             console.log('Earnings response:', response.data);
-            
+
             if (response.data.success && response.data.data) {
                 setEarnings(response.data.data);
             } else {
@@ -97,7 +97,7 @@ const Dashboard = () => {
             console.log('Attempting to accept order:', orderId);
             const response = await api.post('/shopper/orders/accept', { orderId });
             console.log('Accept order response:', response.data);
-            
+
             if (response.data.success !== false) {
                 // Remove the accepted order from available orders
                 setActiveOrders(prev => prev.filter(order => order._id !== orderId));
@@ -151,7 +151,7 @@ const Dashboard = () => {
                         <span className="stat-change positive">+12% from yesterday</span>
                     </div>
                 </div>
-                
+
                 <div className="stat-card orders">
                     <div className="stat-icon">📦</div>
                     <div className="stat-content">
@@ -160,7 +160,7 @@ const Dashboard = () => {
                         <span className="stat-change">Ready to accept</span>
                     </div>
                 </div>
-                
+
                 <div className="stat-card rating">
                     <div className="stat-icon">⭐</div>
                     <div className="stat-content">
@@ -169,7 +169,7 @@ const Dashboard = () => {
                         <span className="stat-change">Based on {shopper?.rating?.count || 0} reviews</span>
                     </div>
                 </div>
-                
+
                 <div className="stat-card completion">
                     <div className="stat-icon">✅</div>
                     <div className="stat-content">
@@ -214,7 +214,7 @@ const Dashboard = () => {
                     </select>
                 </div>
             </div>
-            
+
             {activeOrders.length === 0 ? (
                 <div className="no-orders">
                     <div className="no-orders-icon">📱</div>
@@ -233,35 +233,35 @@ const Dashboard = () => {
                                 </div>
                                 <div className="order-value">
                                     <span className="order-amount">₹{order.totalAmount || order.orderValue?.total || 0}</span>
-                                    <span className="estimated-earning">Earn: ₹{Math.round((order.totalAmount || order.orderValue?.total || 0) * 0.1)}</span>
+                                    <span className="estimated-earning">Earn: ₹{order.shopperCommission || order.orderValue?.deliveryFee || 0}</span>
                                 </div>
                             </div>
-                            
+
                             <div className="order-details">
                                 <div className="shop-info">
                                     <span className="shop-name">🏪 {order.shopId?.name || order.shop?.name || 'Local Shop'}</span>
                                     <span className="shop-distance">📍 1.2 km away</span>
                                 </div>
-                                
+
                                 <div className="order-items">
                                     <span>📦 {order.items?.length || 3} items</span>
                                     <span>⏱️ Est. 25 mins</span>
                                 </div>
-                                
+
                                 <div className="customer-info">
                                     <span>👤 {order.customerId?.name || order.customer?.name || 'Customer'}</span>
                                     <span>📍 {order.deliveryAddress?.street ? `${order.deliveryAddress.street}, ${order.deliveryAddress.city}` : '111 Eastview Gate, Brampton'}</span>
                                 </div>
                             </div>
-                            
+
                             <div className="order-actions">
-                                <button 
+                                <button
                                     className="view-details-btn"
                                     onClick={() => handleViewDetails(order)}
                                 >
                                     View Details
                                 </button>
-                                <button 
+                                <button
                                     className="accept-btn"
                                     onClick={() => handleAcceptOrder(order._id)}
                                 >
@@ -300,7 +300,7 @@ const Dashboard = () => {
                     <span className="earnings-change">Orders completed today</span>
                 </div>
             </div>
-            
+
             <div className="order-history">
                 <h4>Order History & Earnings</h4>
                 {historyLoading ? (
@@ -316,12 +316,12 @@ const Dashboard = () => {
                             const orderAmount = order.actualBill?.amount || order.orderValue?.total || 0;
                             const earning = order.shopperCommission || order.orderValue?.deliveryFee || 0;
                             const deliveryAddress = order.deliveryAddress;
-                            const addressStr = typeof deliveryAddress === 'string' 
-                                ? deliveryAddress 
-                                : deliveryAddress 
-                                    ? `${deliveryAddress.street || ''}, ${deliveryAddress.city || ''}`.trim().replace(/^,/, '') 
+                            const addressStr = typeof deliveryAddress === 'string'
+                                ? deliveryAddress
+                                : deliveryAddress
+                                    ? `${deliveryAddress.street || ''}, ${deliveryAddress.city || ''}`.trim().replace(/^,/, '')
                                     : 'N/A';
-                            
+
                             return (
                                 <div key={order._id} className="history-item">
                                     <div className="order-info">
@@ -368,7 +368,7 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-            
+
             <div className="profile-stats">
                 <div className="stat">
                     <span className="stat-value">{shopper?.stats?.totalOrders || 0}</span>
@@ -387,7 +387,7 @@ const Dashboard = () => {
                     <span className="stat-label">Avg Delivery</span>
                 </div>
             </div>
-            
+
             <div className="profile-settings">
                 <h4>Settings</h4>
                 <div className="settings-grid">
@@ -402,16 +402,16 @@ const Dashboard = () => {
                     </div>
                     <div className="setting-item">
                         <span>💰 Max Order Value</span>
-                        <input 
-                            type="number" 
+                        <input
+                            type="number"
                             defaultValue={shopper?.preferences?.maxOrderValue || 5000}
                             placeholder="₹5000"
                         />
                     </div>
                     <div className="setting-item">
                         <span>📍 Working Areas</span>
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             placeholder="Add preferred areas"
                         />
                     </div>
@@ -433,8 +433,8 @@ const Dashboard = () => {
                 <div className="header-right">
                     <div className="online-toggle">
                         <label className="switch">
-                            <input 
-                                type="checkbox" 
+                            <input
+                                type="checkbox"
                                 checked={shopper?.isOnline}
                                 onChange={handleToggleOnlineStatus}
                             />
@@ -451,35 +451,35 @@ const Dashboard = () => {
             </header>
 
             <nav className="dashboard-nav">
-                <button 
+                <button
                     className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
                     onClick={() => setActiveTab('dashboard')}
                 >
                     <span className="nav-icon">🏠</span>
                     Dashboard
                 </button>
-                <button 
+                <button
                     className={`nav-btn ${activeTab === 'orders' ? 'active' : ''}`}
                     onClick={() => setActiveTab('orders')}
                 >
                     <span className="nav-icon">📦</span>
                     Available Orders ({activeOrders.length})
                 </button>
-                <button 
+                <button
                     className={`nav-btn ${activeTab === 'manage-orders' ? 'active' : ''}`}
                     onClick={() => setActiveTab('manage-orders')}
                 >
                     <span className="nav-icon">🛠️</span>
                     Manage Orders
                 </button>
-                <button 
+                <button
                     className={`nav-btn ${activeTab === 'earnings' ? 'active' : ''}`}
                     onClick={() => setActiveTab('earnings')}
                 >
                     <span className="nav-icon">💰</span>
                     Earnings
                 </button>
-                <button 
+                <button
                     className={`nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
                     onClick={() => setActiveTab('profile')}
                 >
