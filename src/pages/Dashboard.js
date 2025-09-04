@@ -228,7 +228,7 @@ const Dashboard = () => {
                         <div key={order._id} className="order-card enhanced">
                             <div className="order-header">
                                 <div className="order-info">
-                                    <h4>Order #{order.orderNumber || order._id?.slice(-6)}</h4>
+                                    <h4>Order #{order.orderNumber || order._id?.slice(-8)}</h4>
                                     <span className="order-time">2 mins ago</span>
                                 </div>
                                 <div className="order-value">
@@ -325,7 +325,7 @@ const Dashboard = () => {
                             return (
                                 <div key={order._id} className="history-item">
                                     <div className="order-info">
-                                        <div className="order-id">Order #{order._id?.slice(-6)}</div>
+                                        <div className="order-id">Order #{order.orderNumber || order._id?.slice(-8)}</div>
                                         <div className="order-date">
                                             {new Date(order.deliveredAt || order.updatedAt).toLocaleDateString()}
                                         </div>
