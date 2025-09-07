@@ -75,7 +75,7 @@ export const SocketProvider = ({ children }) => {
 
                 // Show notification
                 const displayTotal = data.newTotal || data.orderData?.totalAmount || 'Updated';
-                
+
                 if (window.Notification && Notification.permission === 'granted') {
                     new Notification('Revision Approved', {
                         body: `Order #${data.orderNumber} revision approved. New total: ₹${displayTotal}`,
@@ -102,7 +102,7 @@ export const SocketProvider = ({ children }) => {
 
                             // Use the orderData if available, otherwise use the newTotal
                             const updatedOrder = {
-                                ...order, 
+                                ...order,
                                 totalAmount: data.orderData?.totalAmount || data.newTotal,
                                 orderValue: {
                                     ...order.orderValue,

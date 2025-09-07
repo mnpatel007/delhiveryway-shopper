@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import { useSocket } from '../context/SocketContext';
 import './OrderManagement.css';
 
 const OrderManagement = () => {
+    const { orders: socketOrders, fetchShopperOrders: socketFetchOrders } = useSocket();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeOrder, setActiveOrder] = useState(null);
@@ -23,14 +25,30 @@ const OrderManagement = () => {
         return () => clearInterval(refreshInterval);
     }, []);
 
+    // Sync with socket orders for real-time updates
+    useEffect(() => {
+        if (socketOrders && socketOrders.length > 0) {
+            console.log('🔄 Syncing with socket orders:', socketOrders);
+            setOrders(socketOrders);
+            setLoading(false);
+        }
+    }, [socketOrders]);
+
     const fetchShopperOrders = async () => {
         try {
-            const response = await api.get('/shopper/orders/active');
-            console.log('Fetched orders response:', response.data);
-            if (response.data.success && response.data.orders) {
-                setOrders(response.data.orders);
-            } else if (response.data.orders) {
-                setOrders(response.data.orders);
+            // Use socket fetch function for real-time updates
+            if (socketFetchOrders) {
+                console.log('🔄 Using socket fetch function');
+                await socketFetchOrders();
+            } else {
+                // Fallback to direct API call
+                const response = await api.get('/shopper/orders/active');
+                console.log('Fetched orders response:', response.data);
+                if (response.data.success && response.data.orders) {
+                    setOrders(response.data.orders);
+                } else if (response.data.orders) {
+                    setOrders(response.data.orders);
+                }
             }
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -115,7 +133,11 @@ const OrderManagement = () => {
                 setActiveOrder(null);
                 setRevisedItems([]);
                 setShopperNotes('');
-                fetchShopperOrders();
+                if (socketFetchOrders) {
+                    await socketFetchOrders();
+                } else {
+                    fetchShopperOrders();
+                }
                 alert('Order revision submitted successfully!');
             } else {
                 throw new Error(response.data.message || 'Failed to submit revision');
@@ -137,7 +159,11 @@ const OrderManagement = () => {
                 orderId,
                 status: 'out_for_delivery'
             });
-            fetchShopperOrders();
+            if (socketFetchOrders) {
+                await socketFetchOrders();
+            } else {
+                fetchShopperOrders();
+            }
             alert('Order marked as ready for delivery!');
         } catch (error) {
             console.error('Error completing order:', error);
@@ -392,7 +418,20 @@ const OrderManagement = () => {
                                     {getStatusBadge(order.status)}
                                 </div>
                                 <div className="order-value">
-                                    <span className="amount">₹{(order.totalAmount || order.orderValue?.total || 0).toFixed(2)}</span>
+                                    {order.revisedItems && order.revisedItems.length > 0 ? (
+                                        <div className="total-breakdown">
+                                            <div className="total-row">
+                                                <span className="total-label">Actual Total:</span>
+                                                <span className="amount original">₹{(order.orderValue?.originalTotal || order.orderValue?.total || 0).toFixed(2)}</span>
+                                            </div>
+                                            <div className="total-row">
+                                                <span className="total-label">Revision Total:</span>
+                                                <span className="amount revised">₹{(order.totalAmount || order.orderValue?.total || 0).toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <span className="amount">₹{(order.totalAmount || order.orderValue?.total || 0).toFixed(2)}</span>
+                                    )}
                                     <span className="earning">Earn: ₹{order.shopperCommission || order.orderValue?.deliveryFee || 0}</span>
                                 </div>
                             </div>
