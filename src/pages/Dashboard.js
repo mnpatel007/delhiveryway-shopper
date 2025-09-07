@@ -7,7 +7,7 @@ import './Dashboard.css';
 
 const Dashboard = () => {
     const { shopper, logout, updateOnlineStatus, loading } = useAuth();
-    const { connected, orders, acceptOrder } = useSocket();
+    const { connected, orders } = useSocket();
     const [activeTab, setActiveTab] = useState('dashboard');
     const [activeOrders, setActiveOrders] = useState([]);
     const [earnings, setEarnings] = useState({
@@ -25,7 +25,7 @@ const Dashboard = () => {
         fetchActiveOrders();
         fetchEarnings();
         fetchOrderHistory();
-    }, []);
+    }, [fetchEarnings]);
 
     // Sync socket orders with activeOrders state
     useEffect(() => {

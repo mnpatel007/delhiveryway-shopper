@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import './OrderManagement.css';
 
 const OrderManagement = () => {
-    const { shopper } = useAuth();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeOrder, setActiveOrder] = useState(null);
@@ -146,9 +144,6 @@ const OrderManagement = () => {
         }
     };
 
-    const handleOutForDelivery = (orderId) => {
-        updateOrderStatus(orderId, 'out_for_delivery');
-    };
 
     const handleDelivered = (orderId) => {
         updateOrderStatus(orderId, 'delivered');

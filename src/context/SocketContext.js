@@ -228,7 +228,7 @@ export const SocketProvider = ({ children }) => {
                 newSocket.disconnect();
             };
         }
-    }, [shopper, SOCKET_URL]);
+    }, [shopper, SOCKET_URL, orders, updateOnlineStatus]);
 
     const acceptOrder = (orderId) => {
         if (socket) {
