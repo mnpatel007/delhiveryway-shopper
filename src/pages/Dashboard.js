@@ -356,14 +356,28 @@ const Dashboard = () => {
                                         })}
                                         {true ? ( // Temporarily show for all orders to test
                                             <div className="order-totals-breakdown">
-                                                <div className="total-row">
-                                                    <span className="total-label">Actual:</span>
-                                                    <span className="amount original">₹{(order.totalAmount || order.orderValue?.total || 0).toFixed(2)}</span>
-                                                </div>
-                                                <div className="total-row">
-                                                    <span className="total-label">Revision:</span>
-                                                    <span className="amount revised">₹{(order.orderValue?.originalTotal || order.revisedOrderValue?.total || order.orderValue?.total || 0).toFixed(2)}</span>
-                                                </div>
+                                                {(order.revisedItems && order.revisedItems.length > 0) ||
+                                                    (order.orderValue?.originalTotal && order.orderValue?.originalTotal !== order.orderValue?.total) ||
+                                                    (order.status === 'customer_reviewing_revision' || order.status === 'final_shopping' || order.status === 'out_for_delivery') ? (
+                                                    <>
+                                                        <div className="total-row">
+                                                            <span className="total-label">Actual:</span>
+                                                            <span className="amount original">₹{(order.totalAmount || order.orderValue?.total || 0).toFixed(2)}</span>
+                                                        </div>
+                                                        <div className="total-row">
+                                                            <span className="total-label">Revision:</span>
+                                                            <span className="amount revised">₹{(order.orderValue?.originalTotal || order.revisedOrderValue?.total || order.orderValue?.total || 0).toFixed(2)}</span>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className="total-row">
+                                                            <span className="total-label">Total:</span>
+                                                            <span className="amount no-revision">₹{(order.totalAmount || order.orderValue?.total || orderAmount || 0).toFixed(2)}</span>
+                                                        </div>
+                                                        <div className="no-revision-text">No revision</div>
+                                                    </>
+                                                )}
                                             </div>
                                         ) : (
                                             <div className="order-value">Order: ₹{orderAmount}</div>
