@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import { useSocket } from '../context/SocketContext';
 import './OrderManagement.css';
@@ -23,7 +23,7 @@ const OrderManagement = () => {
         }, 10000); // Refresh every 10 seconds for faster updates
 
         return () => clearInterval(refreshInterval);
-    }, []);
+    }, [fetchShopperOrders]);
 
     // Sync with socket orders for real-time updates
     useEffect(() => {
@@ -34,7 +34,7 @@ const OrderManagement = () => {
         }
     }, [socketOrders]);
 
-    const fetchShopperOrders = async () => {
+    const fetchShopperOrders = useCallback(async () => {
         try {
             // Use socket fetch function for real-time updates
             if (socketFetchOrders) {
@@ -55,7 +55,7 @@ const OrderManagement = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [socketFetchOrders]);
 
     const updateOrderStatus = async (orderId, status, additionalData = {}) => {
         try {
