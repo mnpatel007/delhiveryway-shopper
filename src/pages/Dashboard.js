@@ -344,9 +344,17 @@ const Dashboard = () => {
                                         <div className="shop">🏪 {order.shopId?.name || 'Shop'}</div>
                                     </div>
                                     <div className="order-earnings">
-                                        {(order.revisedItems && order.revisedItems.length > 0) ||
-                                            (order.orderValue?.originalTotal && order.orderValue?.originalTotal !== order.orderValue?.total) ||
-                                            (order.status === 'customer_reviewing_revision' || order.status === 'final_shopping' || order.status === 'out_for_delivery') ? (
+                                        {/* Debug: Log order data */}
+                                        {console.log('🔍 Dashboard order data:', {
+                                            orderId: order._id,
+                                            status: order.status,
+                                            revisedItems: order.revisedItems,
+                                            originalTotal: order.orderValue?.originalTotal,
+                                            currentTotal: order.orderValue?.total,
+                                            totalAmount: order.totalAmount,
+                                            orderAmount: orderAmount
+                                        })}
+                                        {true ? ( // Temporarily show for all orders to test
                                             <div className="order-totals-breakdown">
                                                 <div className="total-row">
                                                     <span className="total-label">Actual:</span>
