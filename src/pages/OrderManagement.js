@@ -16,8 +16,9 @@ const OrderManagement = () => {
 
         // Set up periodic refresh to catch any missed updates
         const refreshInterval = setInterval(() => {
+            console.log('🔄 Auto-refreshing orders...');
             fetchShopperOrders();
-        }, 30000); // Refresh every 30 seconds
+        }, 10000); // Refresh every 10 seconds for faster updates
 
         return () => clearInterval(refreshInterval);
     }, []);

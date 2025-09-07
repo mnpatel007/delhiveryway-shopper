@@ -96,7 +96,21 @@ export const SocketProvider = ({ children }) => {
 
                         if (orderIdMatch) {
                             console.log('Found matching order, updating total from', order.totalAmount, 'to', data.newTotal);
-                            return { ...order, totalAmount: data.newTotal, orderValue: { ...order.orderValue, total: data.newTotal } };
+                            console.log('Order data received:', data.orderData);
+
+                            // Use the orderData if available, otherwise use the newTotal
+                            const updatedOrder = {
+                                ...order,
+                                totalAmount: data.orderData?.totalAmount || data.newTotal,
+                                orderValue: {
+                                    ...order.orderValue,
+                                    total: data.orderData?.orderValue?.total || data.newTotal
+                                },
+                                status: 'final_shopping'
+                            };
+
+                            console.log('Updated order:', updatedOrder);
+                            return updatedOrder;
                         }
                         return order;
                     });
