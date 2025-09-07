@@ -12,28 +12,6 @@ const OrderManagement = () => {
     const [revisedItems, setRevisedItems] = useState([]);
     const [shopperNotes, setShopperNotes] = useState('');
 
-
-    useEffect(() => {
-        fetchShopperOrders();
-
-        // Set up periodic refresh to catch any missed updates
-        const refreshInterval = setInterval(() => {
-            console.log('🔄 Auto-refreshing orders...');
-            fetchShopperOrders();
-        }, 10000); // Refresh every 10 seconds for faster updates
-
-        return () => clearInterval(refreshInterval);
-    }, [fetchShopperOrders]);
-
-    // Sync with socket orders for real-time updates
-    useEffect(() => {
-        if (socketOrders && socketOrders.length > 0) {
-            console.log('🔄 Syncing with socket orders:', socketOrders);
-            setOrders(socketOrders);
-            setLoading(false);
-        }
-    }, [socketOrders]);
-
     const fetchShopperOrders = useCallback(async () => {
         try {
             // Use socket fetch function for real-time updates
@@ -56,6 +34,27 @@ const OrderManagement = () => {
             setLoading(false);
         }
     }, [socketFetchOrders]);
+
+    useEffect(() => {
+        fetchShopperOrders();
+
+        // Set up periodic refresh to catch any missed updates
+        const refreshInterval = setInterval(() => {
+            console.log('🔄 Auto-refreshing orders...');
+            fetchShopperOrders();
+        }, 10000); // Refresh every 10 seconds for faster updates
+
+        return () => clearInterval(refreshInterval);
+    }, [fetchShopperOrders]);
+
+    // Sync with socket orders for real-time updates
+    useEffect(() => {
+        if (socketOrders && socketOrders.length > 0) {
+            console.log('🔄 Syncing with socket orders:', socketOrders);
+            setOrders(socketOrders);
+            setLoading(false);
+        }
+    }, [socketOrders]);
 
     const updateOrderStatus = async (orderId, status, additionalData = {}) => {
         try {
