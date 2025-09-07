@@ -1,6 +1,5 @@
 {
     "version": 2,
-    "buildCommand": "npm run vercel-build",
     "builds": [
         {
             "src": "package.json",
@@ -12,38 +11,8 @@
     ],
     "routes": [
         {
-            "src": "/static/(.*)",
-            "headers": {
-                "cache-control": "public, max-age=31536000, immutable"
-            }
-        },
-        {
             "src": "/(.*)",
             "dest": "/index.html"
-        }
-    ],
-    "headers": [
-        {
-            "source": "/manifest.json",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=31536000"
-                },
-                {
-                    "key": "Access-Control-Allow-Origin",
-                    "value": "*"
-                }
-            ]
-        },
-        {
-            "source": "/static/(.*)",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=31536000, immutable"
-                }
-            ]
         }
     ]
 }
