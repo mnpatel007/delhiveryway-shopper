@@ -430,7 +430,7 @@ const OrderManagement = () => {
                                 <div className="order-value">
                                     {(order.revisedItems && order.revisedItems.length > 0) ||
                                         (order.orderValue?.originalTotal && order.orderValue?.originalTotal !== order.orderValue?.total) ||
-                                        (order.status === 'customer_reviewing_revision' || order.status === 'final_shopping') ? (
+                                        (order.status === 'customer_reviewing_revision' || order.status === 'final_shopping' || order.status === 'out_for_delivery') ? (
                                         <div className="total-breakdown">
                                             <div className="total-row">
                                                 <span className="total-label">Actual Total:</span>
