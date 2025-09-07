@@ -27,6 +27,13 @@ const Dashboard = () => {
         fetchOrderHistory();
     }, []);
 
+    // Sync socket orders with activeOrders state
+    useEffect(() => {
+        if (orders && orders.length > 0) {
+            setActiveOrders(orders);
+        }
+    }, [orders]);
+
     const fetchOrderHistory = async () => {
         try {
             const response = await api.get('/shopper/orders/completed');
@@ -313,7 +320,7 @@ const Dashboard = () => {
                     <div className="history-list">
                         {orderHistory.map(order => {
                             // Use shopperCommission if available, otherwise deliveryFee
-                            const orderAmount = order.actualBill?.amount || order.orderValue?.total || 0;
+                            const orderAmount = order.totalAmount || order.actualBill?.amount || order.orderValue?.total || 0;
                             const earning = order.shopperCommission || order.orderValue?.deliveryFee || 0;
                             const deliveryAddress = order.deliveryAddress;
                             const addressStr = typeof deliveryAddress === 'string'

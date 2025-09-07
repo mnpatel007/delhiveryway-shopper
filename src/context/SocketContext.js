@@ -59,6 +59,32 @@ export const SocketProvider = ({ children }) => {
                 );
             });
 
+            // Listen for revision approval
+            newSocket.on('revisionApproved', (data) => {
+                console.log('✅ Revision approved:', data);
+
+                // Play notification sound
+                const audio = new Audio('/notification.mp3');
+                audio.play().catch(e => console.log('Audio play failed:', e));
+
+                // Show notification
+                if (window.Notification && Notification.permission === 'granted') {
+                    new Notification('Revision Approved', {
+                        body: `Order #${data.orderNumber} revision approved. New total: ₹${data.newTotal}`,
+                        icon: '/logo192.png'
+                    });
+                } else {
+                    alert(`Revision approved for Order #${data.orderNumber}. New total: ₹${data.newTotal}`);
+                }
+
+                // Update the order in the orders list
+                setOrders(prev =>
+                    prev.map(order =>
+                        order._id === data.orderId ? { ...order, totalAmount: data.newTotal, orderValue: { ...order.orderValue, total: data.newTotal } } : order
+                    )
+                );
+            });
+
             // Listen for admin status updates
             newSocket.on('adminStatusUpdate', (data) => {
                 console.log('👨‍💼 Admin status update:', data);

@@ -378,7 +378,7 @@ const OrderManagement = () => {
                                     {getStatusBadge(order.status)}
                                 </div>
                                 <div className="order-value">
-                                    <span className="amount">₹{order.orderValue?.total?.toFixed(2) || '0.00'}</span>
+                                    <span className="amount">₹{(order.totalAmount || order.orderValue?.total || 0).toFixed(2)}</span>
                                     <span className="earning">Earn: ₹{order.shopperCommission || order.orderValue?.deliveryFee || 0}</span>
                                 </div>
                             </div>
