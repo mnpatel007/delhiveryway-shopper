@@ -416,8 +416,19 @@ const OrderManagement = () => {
                                     <h3>Order #{order.orderNumber}</h3>
                                     {getStatusBadge(order.status)}
                                 </div>
+                                {/* Debug: Log order data */}
+                                {console.log('🔍 Order data for display:', {
+                                    orderId: order._id,
+                                    status: order.status,
+                                    revisedItems: order.revisedItems,
+                                    originalTotal: order.orderValue?.originalTotal,
+                                    currentTotal: order.orderValue?.total,
+                                    totalAmount: order.totalAmount
+                                })}
                                 <div className="order-value">
-                                    {order.revisedItems && order.revisedItems.length > 0 ? (
+                                    {(order.revisedItems && order.revisedItems.length > 0) ||
+                                        (order.orderValue?.originalTotal && order.orderValue?.originalTotal !== order.orderValue?.total) ||
+                                        (order.status === 'customer_reviewing_revision' || order.status === 'final_shopping') ? (
                                         <div className="total-breakdown">
                                             <div className="total-row">
                                                 <span className="total-label">Actual Total:</span>
