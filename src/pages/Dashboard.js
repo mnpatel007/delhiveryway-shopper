@@ -344,7 +344,22 @@ const Dashboard = () => {
                                         <div className="shop">🏪 {order.shopId?.name || 'Shop'}</div>
                                     </div>
                                     <div className="order-earnings">
-                                        <div className="order-value">Order: ₹{orderAmount}</div>
+                                        {(order.revisedItems && order.revisedItems.length > 0) ||
+                                            (order.orderValue?.originalTotal && order.orderValue?.originalTotal !== order.orderValue?.total) ||
+                                            (order.status === 'customer_reviewing_revision' || order.status === 'final_shopping' || order.status === 'out_for_delivery') ? (
+                                            <div className="order-totals-breakdown">
+                                                <div className="total-row">
+                                                    <span className="total-label">Actual:</span>
+                                                    <span className="amount original">₹{(order.totalAmount || order.orderValue?.total || 0).toFixed(2)}</span>
+                                                </div>
+                                                <div className="total-row">
+                                                    <span className="total-label">Revision:</span>
+                                                    <span className="amount revised">₹{(order.orderValue?.originalTotal || order.revisedOrderValue?.total || order.orderValue?.total || 0).toFixed(2)}</span>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="order-value">Order: ₹{orderAmount}</div>
+                                        )}
                                         <div className="earning-amount">Earned: ₹{earning}</div>
                                     </div>
                                 </div>
