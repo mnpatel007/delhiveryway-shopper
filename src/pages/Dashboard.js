@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import api from '../services/api';
@@ -60,7 +60,7 @@ const Dashboard = () => {
         }
     };
 
-    const fetchEarnings = async () => {
+    const fetchEarnings = useCallback(async () => {
         try {
             setEarningsLoading(true);
             console.log('Fetching earnings for shopper:', shopper?._id);
@@ -92,7 +92,7 @@ const Dashboard = () => {
         } finally {
             setEarningsLoading(false);
         }
-    };
+    }, [shopper?._id, shopper?.stats?.totalEarnings]);
 
     const handleToggleOnlineStatus = async () => {
         const newStatus = !shopper?.isOnline;
