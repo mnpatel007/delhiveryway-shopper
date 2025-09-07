@@ -74,13 +74,15 @@ export const SocketProvider = ({ children }) => {
                 }
 
                 // Show notification
+                const displayTotal = data.newTotal || data.orderData?.totalAmount || 'Updated';
+                
                 if (window.Notification && Notification.permission === 'granted') {
                     new Notification('Revision Approved', {
-                        body: `Order #${data.orderNumber} revision approved. New total: ₹${data.newTotal}`,
+                        body: `Order #${data.orderNumber} revision approved. New total: ₹${displayTotal}`,
                         icon: '/logo192.png'
                     });
                 } else {
-                    alert(`Revision approved for Order #${data.orderNumber}. New total: ₹${data.newTotal}`);
+                    alert(`Revision approved for Order #${data.orderNumber}. New total: ₹${displayTotal}`);
                 }
 
                 // Update the order in the orders list
@@ -100,13 +102,22 @@ export const SocketProvider = ({ children }) => {
 
                             // Use the orderData if available, otherwise use the newTotal
                             const updatedOrder = {
-                                ...order,
+                                ...order, 
                                 totalAmount: data.orderData?.totalAmount || data.newTotal,
                                 orderValue: {
                                     ...order.orderValue,
                                     total: data.orderData?.orderValue?.total || data.newTotal
                                 },
-                                status: 'final_shopping'
+                                status: 'final_shopping',
+                                timeline: [
+                                    ...(order.timeline || []),
+                                    {
+                                        status: 'final_shopping',
+                                        timestamp: new Date(),
+                                        note: 'Customer approved the revised order - proceeding with final shopping',
+                                        updatedBy: 'customer'
+                                    }
+                                ]
                             };
 
                             console.log('Updated order:', updatedOrder);
