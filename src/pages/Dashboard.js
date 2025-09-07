@@ -357,7 +357,10 @@ const Dashboard = () => {
                                         <div className="order-totals-breakdown">
                                             {(order.revisedItems && order.revisedItems.length > 0) ||
                                                 (order.orderValue?.originalTotal && order.orderValue?.originalTotal !== order.orderValue?.total) ||
-                                                (order.status === 'customer_reviewing_revision' || order.status === 'final_shopping' || order.status === 'out_for_delivery') ? (
+                                                (order.status === 'customer_reviewing_revision' || order.status === 'final_shopping' || order.status === 'out_for_delivery') ||
+                                                (order.revisedOrderValue && order.revisedOrderValue.total) ||
+                                                (order.totalAmount && order.totalAmount !== orderAmount) ||
+                                                (order.orderValue?.total && order.orderValue?.total !== orderAmount) ? (
                                                 <>
                                                     <div className="total-row">
                                                         <span className="total-label">Actual:</span>
