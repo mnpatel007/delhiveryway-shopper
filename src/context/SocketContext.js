@@ -133,6 +133,95 @@ export const SocketProvider = ({ children }) => {
                 }
             });
 
+            // Listen for order status updates
+            newSocket.on('orderStatusUpdate', (data) => {
+                console.log('📋 Order status update:', data);
+
+                // Play notification sound
+                try {
+                    const audio = new Audio('/notification.mp3');
+                    audio.volume = 0.5;
+                    audio.play().catch(e => console.log('Audio play failed:', e));
+                } catch (error) {
+                    console.log('Audio creation failed:', error);
+                }
+
+                // Show notification
+                if (window.Notification && Notification.permission === 'granted') {
+                    new Notification('Order Status Update', {
+                        body: data.message || `Order status updated to: ${data.status}`,
+                        icon: '/logo192.png'
+                    });
+                } else {
+                    alert(data.message || `Order status updated to: ${data.status}`);
+                }
+
+                // Update the order in the orders list
+                setOrders(prev =>
+                    prev.map(order =>
+                        order._id === data.orderId ? { ...order, status: data.status } : order
+                    )
+                );
+            });
+
+            // Listen for order cancellations
+            newSocket.on('orderCancelled', (data) => {
+                console.log('❌ Order cancelled:', data);
+
+                // Play notification sound
+                try {
+                    const audio = new Audio('/notification.mp3');
+                    audio.volume = 0.5;
+                    audio.play().catch(e => console.log('Audio play failed:', e));
+                } catch (error) {
+                    console.log('Audio creation failed:', error);
+                }
+
+                // Show notification
+                if (window.Notification && Notification.permission === 'granted') {
+                    new Notification('Order Cancelled', {
+                        body: data.message || 'An order has been cancelled',
+                        icon: '/logo192.png'
+                    });
+                } else {
+                    alert(data.message || 'An order has been cancelled');
+                }
+
+                // Remove the order from the orders list
+                setOrders(prev => prev.filter(order => order._id !== data.orderId));
+            });
+
+            // Listen for revision rejections
+            newSocket.on('revisionRejected', (data) => {
+                console.log('❌ Revision rejected:', data);
+
+                // Play notification sound
+                try {
+                    const audio = new Audio('/notification.mp3');
+                    audio.volume = 0.5;
+                    audio.play().catch(e => console.log('Audio play failed:', e));
+                } catch (error) {
+                    console.log('Audio creation failed:', error);
+                }
+
+                // Show notification
+                if (window.Notification && Notification.permission === 'granted') {
+                    new Notification('Revision Rejected', {
+                        body: data.message || 'Customer rejected your revision',
+                        icon: '/logo192.png'
+                    });
+                } else {
+                    alert(data.message || 'Customer rejected your revision');
+                }
+
+                // Update the order status
+                setOrders(prev =>
+                    prev.map(order =>
+                        order._id === data.orderId ? { ...order, status: 'shopping_in_progress' } : order
+                    )
+                );
+            });
+
             setSocket(newSocket);
 
             return () => {
