@@ -65,8 +65,13 @@ export const SocketProvider = ({ children }) => {
                 console.log('Current orders before update:', orders);
 
                 // Play notification sound
-                const audio = new Audio('/notification.mp3');
-                audio.play().catch(e => console.log('Audio play failed:', e));
+                try {
+                    const audio = new Audio('/notification.mp3');
+                    audio.volume = 0.5;
+                    audio.play().catch(e => console.log('Audio play failed:', e));
+                } catch (error) {
+                    console.log('Audio creation failed:', error);
+                }
 
                 // Show notification
                 if (window.Notification && Notification.permission === 'granted') {
