@@ -400,11 +400,9 @@ const Dashboard = () => {
                     <button className="edit-avatar">📷</button>
                 </div>
                 <div className="profile-info">
-                    <h3>{shopper?.name || 'Meet Patel'}</h3>
-                    <div className="contact-info">
-                        <p className="email">📧 {shopper?.email || 'meetnp007@gmail.com'}</p>
-                        <p className="phone">📱 {shopper?.phone || '2898940598'}</p>
-                    </div>
+                    <h3>{shopper?.name}</h3>
+                    <p>{shopper?.email}</p>
+                    <p>{shopper?.phone}</p>
                     <div className="verification-status">
                         {shopper?.verification?.isVerified ? (
                             <span className="verified">✅ Verified Shopper</span>
@@ -412,137 +410,56 @@ const Dashboard = () => {
                             <span className="unverified">⏳ Verification Pending</span>
                         )}
                     </div>
-                    <div className="profile-actions">
-                        <button className="action-btn primary">✏️ Edit Profile</button>
-                        <button className="action-btn secondary">🔒 Change Password</button>
-                    </div>
                 </div>
             </div>
 
             <div className="profile-stats">
-                <div className="stats-header">
-                    <h4>📊 Performance Overview</h4>
+                <div className="stat">
+                    <span className="stat-value">{shopper?.stats?.totalOrders || 0}</span>
+                    <span className="stat-label">Total Orders</span>
                 </div>
-                <div className="stats-grid">
-                    <div className="stat-card">
-                        <div className="stat-icon">📦</div>
-                        <div className="stat-content">
-                            <span className="stat-value">{shopper?.stats?.totalOrders || 0}</span>
-                            <span className="stat-label">Total Orders</span>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon">💰</div>
-                        <div className="stat-content">
-                            <span className="stat-value">₹{shopper?.stats?.totalEarnings || 0}</span>
-                            <span className="stat-label">Total Earnings</span>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon">⭐</div>
-                        <div className="stat-content">
-                            <span className="stat-value">{shopper?.rating?.average || 5.0}</span>
-                            <span className="stat-label">Rating</span>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon">⏱️</div>
-                        <div className="stat-content">
-                            <span className="stat-value">{shopper?.stats?.avgDeliveryTime || 25} min</span>
-                            <span className="stat-label">Avg Delivery</span>
-                        </div>
-                    </div>
+                <div className="stat">
+                    <span className="stat-value">₹{shopper?.stats?.totalEarnings || 0}</span>
+                    <span className="stat-label">Total Earnings</span>
+                </div>
+                <div className="stat">
+                    <span className="stat-value">{shopper?.rating?.average || 5.0}</span>
+                    <span className="stat-label">Rating</span>
+                </div>
+                <div className="stat">
+                    <span className="stat-value">{shopper?.stats?.avgDeliveryTime || 25} min</span>
+                    <span className="stat-label">Avg Delivery</span>
                 </div>
             </div>
 
             <div className="profile-settings">
-                <div className="settings-header">
-                    <h4>⚙️ Settings & Preferences</h4>
-                </div>
+                <h4>Settings</h4>
                 <div className="settings-grid">
-                    <div className="setting-card">
-                        <div className="setting-header">
-                            <span className="setting-icon">🚗</span>
-                            <span className="setting-title">Vehicle Type</span>
-                        </div>
-                        <select
-                            className="setting-input"
-                            defaultValue={shopper?.preferences?.vehicleType || 'bike'}
-                        >
-                            <option value="bike">🏍️ Bike</option>
-                            <option value="car">🚗 Car</option>
-                            <option value="bicycle">🚲 Bicycle</option>
-                            <option value="walking">🚶 Walking</option>
+                    <div className="setting-item">
+                        <span>🚗 Vehicle Type</span>
+                        <select defaultValue={shopper?.preferences?.vehicleType || 'bike'}>
+                            <option value="bike">Bike</option>
+                            <option value="car">Car</option>
+                            <option value="bicycle">Bicycle</option>
+                            <option value="walking">Walking</option>
                         </select>
                     </div>
-
-                    <div className="setting-card">
-                        <div className="setting-header">
-                            <span className="setting-icon">💰</span>
-                            <span className="setting-title">Max Order Value</span>
-                        </div>
+                    <div className="setting-item">
+                        <span>💰 Max Order Value</span>
                         <input
-                            className="setting-input"
                             type="number"
                             defaultValue={shopper?.preferences?.maxOrderValue || 5000}
                             placeholder="₹5000"
                         />
                     </div>
-
-                    <div className="setting-card">
-                        <div className="setting-header">
-                            <span className="setting-icon">🔔</span>
-                            <span className="setting-title">Notifications</span>
-                        </div>
-                        <div className="setting-options">
-                            <label className="checkbox-label">
-                                <input type="checkbox" defaultChecked />
-                                <span>Order Updates</span>
-                            </label>
-                            <label className="checkbox-label">
-                                <input type="checkbox" defaultChecked />
-                                <span>Earnings Alerts</span>
-                            </label>
-                            <label className="checkbox-label">
-                                <input type="checkbox" />
-                                <span>Promotional Offers</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div className="setting-card">
-                        <div className="setting-header">
-                            <span className="setting-icon">📍</span>
-                            <span className="setting-title">Working Areas</span>
-                        </div>
-                        <div className="service-area">
-                            <span className="area-text">Vadodara, Gujarat</span>
-                            <button className="change-area-btn">Change</button>
-                        </div>
-                    </div>
-
-                    <div className="setting-card">
-                        <div className="setting-header">
-                            <span className="setting-icon">⏰</span>
-                            <span className="setting-title">Working Hours</span>
-                        </div>
-                        <div className="time-settings">
-                            <div className="time-input">
-                                <label>Start Time</label>
-                                <input type="time" defaultValue="09:00" />
-                            </div>
-                            <div className="time-input">
-                                <label>End Time</label>
-                                <input type="time" defaultValue="21:00" />
-                            </div>
-                        </div>
+                    <div className="setting-item">
+                        <span>📍 Working Areas</span>
+                        <input
+                            type="text"
+                            placeholder="Add preferred areas"
+                        />
                     </div>
                 </div>
-            </div>
-
-            <div className="profile-actions-footer">
-                <button className="save-btn">💾 Save Changes</button>
-                <button className="logout-btn" onClick={logout}>🚪 Logout</button>
             </div>
         </div>
     );
