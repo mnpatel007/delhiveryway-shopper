@@ -432,7 +432,7 @@ const OrderManagement = () => {
                                         <div className="total-breakdown">
                                             <div className="total-row">
                                                 <span className="total-label">Actual Total:</span>
-                                                <span className="amount original">₹{(order.orderValue?.originalTotal || order.orderValue?.total || 0).toFixed(2)}</span>
+                                                <span className="amount original">₹{(order.orderValue?.originalTotal || 0).toFixed(2)}</span>
                                             </div>
                                             <div className="total-row">
                                                 <span className="total-label">Revision Total:</span>
