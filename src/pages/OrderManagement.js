@@ -15,6 +15,13 @@ const OrderManagement = () => {
 
     useEffect(() => {
         fetchShopperOrders();
+
+        // Set up periodic refresh to catch any missed updates
+        const refreshInterval = setInterval(() => {
+            fetchShopperOrders();
+        }, 30000); // Refresh every 30 seconds
+
+        return () => clearInterval(refreshInterval);
     }, []);
 
     const fetchShopperOrders = async () => {
@@ -358,8 +365,19 @@ const OrderManagement = () => {
     return (
         <div className="order-management">
             <div className="orders-header">
-                <h2>Order Management</h2>
-                <p>Manage your assigned orders through their complete lifecycle</p>
+                <div className="header-content">
+                    <div>
+                        <h2>Order Management</h2>
+                        <p>Manage your assigned orders through their complete lifecycle</p>
+                    </div>
+                    <button
+                        className="refresh-btn"
+                        onClick={fetchShopperOrders}
+                        title="Refresh orders"
+                    >
+                        🔄 Refresh
+                    </button>
+                </div>
             </div>
 
             {orders.length === 0 ? (

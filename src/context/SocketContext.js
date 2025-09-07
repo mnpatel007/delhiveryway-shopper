@@ -62,6 +62,7 @@ export const SocketProvider = ({ children }) => {
             // Listen for revision approval
             newSocket.on('revisionApproved', (data) => {
                 console.log('✅ Revision approved:', data);
+                console.log('Current orders before update:', orders);
 
                 // Play notification sound
                 const audio = new Audio('/notification.mp3');
@@ -78,11 +79,25 @@ export const SocketProvider = ({ children }) => {
                 }
 
                 // Update the order in the orders list
-                setOrders(prev =>
-                    prev.map(order =>
-                        order._id === data.orderId ? { ...order, totalAmount: data.newTotal, orderValue: { ...order.orderValue, total: data.newTotal } } : order
-                    )
-                );
+                setOrders(prev => {
+                    console.log('Updating orders, looking for orderId:', data.orderId);
+                    const updated = prev.map(order => {
+                        console.log('Checking order:', order._id, 'against:', data.orderId);
+                        // Handle both string and ObjectId comparisons
+                        const orderIdMatch = order._id === data.orderId ||
+                            order._id.toString() === data.orderId.toString() ||
+                            order._id === data.orderId.toString() ||
+                            order._id.toString() === data.orderId;
+
+                        if (orderIdMatch) {
+                            console.log('Found matching order, updating total from', order.totalAmount, 'to', data.newTotal);
+                            return { ...order, totalAmount: data.newTotal, orderValue: { ...order.orderValue, total: data.newTotal } };
+                        }
+                        return order;
+                    });
+                    console.log('Updated orders:', updated);
+                    return updated;
+                });
             });
 
             // Listen for admin status updates
