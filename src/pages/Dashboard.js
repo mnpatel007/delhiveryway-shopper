@@ -20,6 +20,40 @@ const Dashboard = () => {
     const [orderHistory, setOrderHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(true);
 
+    const fetchEarnings = useCallback(async () => {
+        try {
+            setEarningsLoading(true);
+            console.log('Fetching earnings for shopper:', shopper?._id);
+            const response = await api.get('/shopper/earnings');
+            console.log('Earnings response:', response.data);
+
+            if (response.data.success && response.data.data) {
+                setEarnings(response.data.data);
+            } else {
+                console.log('No earnings data, using fallback');
+                // Fallback to shopper stats or zero
+                setEarnings({
+                    today: 0,
+                    thisWeek: 0,
+                    thisMonth: 0,
+                    total: shopper?.stats?.totalEarnings || 0
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching earnings:', error);
+            console.error('Error details:', error.response?.data);
+            // Set fallback values on error
+            setEarnings({
+                today: 0,
+                thisWeek: 0,
+                thisMonth: 0,
+                total: shopper?.stats?.totalEarnings || 0
+            });
+        } finally {
+            setEarningsLoading(false);
+        }
+    }, [shopper?._id, shopper?.stats?.totalEarnings]);
+
     useEffect(() => {
         // Fetch active orders and earnings data
         fetchActiveOrders();
@@ -60,39 +94,6 @@ const Dashboard = () => {
         }
     };
 
-    const fetchEarnings = useCallback(async () => {
-        try {
-            setEarningsLoading(true);
-            console.log('Fetching earnings for shopper:', shopper?._id);
-            const response = await api.get('/shopper/earnings');
-            console.log('Earnings response:', response.data);
-
-            if (response.data.success && response.data.data) {
-                setEarnings(response.data.data);
-            } else {
-                console.log('No earnings data, using fallback');
-                // Fallback to shopper stats or zero
-                setEarnings({
-                    today: 0,
-                    thisWeek: 0,
-                    thisMonth: 0,
-                    total: shopper?.stats?.totalEarnings || 0
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching earnings:', error);
-            console.error('Error details:', error.response?.data);
-            // Set fallback values on error
-            setEarnings({
-                today: 0,
-                thisWeek: 0,
-                thisMonth: 0,
-                total: shopper?.stats?.totalEarnings || 0
-            });
-        } finally {
-            setEarningsLoading(false);
-        }
-    }, [shopper?._id, shopper?.stats?.totalEarnings]);
 
     const handleToggleOnlineStatus = async () => {
         const newStatus = !shopper?.isOnline;
