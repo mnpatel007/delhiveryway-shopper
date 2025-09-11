@@ -109,13 +109,31 @@ const OrderManagement = () => {
     };
 
     const handleItemRevision = (itemId, field, value) => {
-        setRevisedItems(prev => prev.map(item =>
-            item.itemId === itemId ? { ...item, [field]: value } : item
-        ));
+        setRevisedItems(prev => prev.map(item => {
+            if (item.itemId !== itemId) return item;
+
+            if (field === 'quantity') {
+                const next = Number(value);
+                if (!Number.isFinite(next) || next < 1) {
+                    alert('You cannot decrease the quantity to zero. Instead, mark the item as Not Available.');
+                    return item; // do not apply invalid change
+                }
+                return { ...item, quantity: Math.floor(next) };
+            }
+
+            return { ...item, [field]: value };
+        }));
     };
 
     const submitRevision = async () => {
         try {
+            // Prevent any available item with zero/invalid quantity
+            const invalid = revisedItems.some(it => (it.isAvailable !== false) && (!Number.isFinite(Number(it.quantity)) || Number(it.quantity) < 1));
+            if (invalid) {
+                alert('One or more items have quantity set to zero while marked Available. Please mark such items as Not Available instead.');
+                return;
+            }
+
             console.log('Submitting revision for order:', activeOrder._id);
             console.log('Revised items:', revisedItems);
             console.log('Shopper notes:', shopperNotes);
