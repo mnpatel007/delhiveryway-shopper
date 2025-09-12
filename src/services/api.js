@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://delhiveryway-backend-1.onrender.com/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 // Create axios instance
 const api = axios.create({
@@ -66,8 +66,8 @@ api.interceptors.response.use(
 
 // Shopper API endpoints
 export const shopperAPI = {
-    login: (credentials) => api.post('/shopper/login', credentials),
-    signup: (userData) => api.post('/shopper/signup', userData),
+    login: (credentials) => api.post('/shopper/auth/login', credentials),
+    signup: (userData) => api.post('/shopper/auth/register', userData),
     getProfile: () => api.get('/shopper/profile'),
     updateProfile: (data) => api.put('/shopper/profile', data),
     

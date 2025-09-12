@@ -103,7 +103,7 @@ const Dashboard = () => {
     const handleAcceptOrder = async (orderId) => {
         try {
             console.log('Attempting to accept order:', orderId);
-            const response = await api.post('/shopper/orders/accept', { orderId });
+            const response = await api.post('/shopper/orders/accept', { orderId }); // Route exists in backend shopperOrderRoutes
             console.log('Accept order response:', response.data);
 
             if (response.data.success !== false) {
