@@ -122,7 +122,15 @@ const Dashboard = () => {
     };
 
     const handleViewDetails = (order) => {
-        alert(`Order Details:\n\nOrder ID: ${order._id}\nCustomer: ${order.customerId?.name || 'N/A'}\nTotal: ₹${order.totalAmount}\nItems: ${order.items?.length || 0}\nDelivery: ${order.deliveryAddress?.street ? `${order.deliveryAddress.street}, ${order.deliveryAddress.city}` : 'N/A'}`);
+        const itemsTotal = (order.items || []).reduce((sum, it) => sum + ((Number(it.price) || 0) * (Number(it.quantity) || 0)), 0);
+        const amount = (
+            order.totalAmount ||
+            order.orderValue?.total ||
+            (itemsTotal + (order.orderValue?.deliveryFee || 0)) ||
+            0
+        );
+        const address = order.deliveryAddress?.street ? `${order.deliveryAddress.street}, ${order.deliveryAddress.city}` : 'N/A';
+        alert(`Order Details:\n\nOrder ID: ${order._id}\nCustomer: ${order.customerId?.name || 'N/A'}\nTotal: ₹${amount}\nItems: ${order.items?.length || 0}\nDelivery: ${address}`);
     };
 
     if (loading) {

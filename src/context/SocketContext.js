@@ -20,6 +20,15 @@ export const SocketProvider = ({ children }) => {
 
     const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:5000';
 
+    // Ask for browser notification permission on first mount
+    useEffect(() => {
+        try {
+            if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+                Notification.requestPermission().catch(() => {});
+            }
+        } catch (_) {}
+    }, []);
+
     useEffect(() => {
         if (shopper) {
             const newSocket = io(SOCKET_URL, {
@@ -45,8 +54,20 @@ export const SocketProvider = ({ children }) => {
                 setOrders(prev => [orderData, ...prev]);
 
                 // Play notification sound
-                const audio = new Audio('/notification.mp3');
-                audio.play().catch(e => console.log('Audio play failed:', e));
+                try {
+                    const audio = new Audio('/notification.mp3');
+                    audio.volume = 0.5;
+                    audio.play().catch(e => console.log('Audio play failed:', e));
+                } catch (e) { console.log('Audio not available'); }
+
+                // Show browser notification or fallback alert
+                const title = 'New Order Available';
+                const body = `Order #${orderData.orderNumber || orderData.orderId?.toString().slice(-6) || ''} • Earn: ₹${orderData.estimatedEarnings || orderData.deliveryFee || ''}`;
+                if (window.Notification && Notification.permission === 'granted') {
+                    new Notification(title, { body, icon: '/logo192.png' });
+                } else {
+                    alert(`${title}\n\n${body}`);
+                }
             });
 
             // Listen for order updates
@@ -57,6 +78,20 @@ export const SocketProvider = ({ children }) => {
                         order._id === orderData._id ? orderData : order
                     )
                 );
+
+                // Notify shopper
+                try {
+                    const audio = new Audio('/notification.mp3');
+                    audio.volume = 0.5;
+                    audio.play().catch(e => console.log('Audio play failed:', e));
+                } catch (e) { }
+                const title = 'Order Update';
+                const body = orderData.message || `Order ${orderData.orderNumber || ''} updated`;
+                if (window.Notification && Notification.permission === 'granted') {
+                    new Notification(title, { body, icon: '/logo192.png' });
+                } else {
+                    alert(`${title}: ${body}`);
+                }
             });
 
             // Listen for revision approval
