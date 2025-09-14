@@ -46,39 +46,39 @@
 
 /* Size Variants */
 .logo-small .logo-img {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 }
 
 .logo-small .logo-text {
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .logo-medium .logo-img {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
 }
 
 .logo-medium .logo-text {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .logo-large .logo-img {
+    width: 36px;
+    height: 36px;
+}
+
+.logo-large .logo-text {
+    font-size: 20px;
+}
+
+.logo-xlarge .logo-img {
     width: 48px;
     height: 48px;
 }
 
-.logo-large .logo-text {
-    font-size: 24px;
-}
-
-.logo-xlarge .logo-img {
-    width: 64px;
-    height: 64px;
-}
-
 .logo-xlarge .logo-text {
-    font-size: 32px;
+    font-size: 24px;
 }
 
 /* Color Variants */
