@@ -1,16 +1,16 @@
 {
-  "short_name": "Delhiveryway Shopper",
-  "name": "Delhiveryway Shopper",
+  "short_name": "DelhiveryWay Shopper",
+  "name": "DelhiveryWay Shopper - Delivery Management Portal",
   "icons": [
     {
-      "src": "logo192.png",
+      "src": "delhiveryway-logo.jpg",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/jpeg"
     },
     {
-      "src": "logo512.png",
+      "src": "delhiveryway-logo.jpg",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/jpeg"
     }
   ],
   "start_url": ".",
