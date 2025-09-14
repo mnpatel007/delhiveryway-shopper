@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import api from '../services/api';
 import OrderManagement from './OrderManagement';
+import Logo from '../components/Logo';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -476,6 +477,7 @@ const Dashboard = () => {
         <div className="dashboard">
             <header className="dashboard-header">
                 <div className="header-left">
+                    <Logo size="medium" showText={true} />
                     <h1>Personal Shopper Dashboard</h1>
                     <div className="status-indicator">
                         <span className={`status-dot ${connected ? 'connected' : 'disconnected'}`}></span>

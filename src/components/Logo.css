@@ -1,0 +1,168 @@
+/* Logo Component Styles */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+.logo-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+}
+
+.logo-button:hover {
+    transform: scale(1.05);
+}
+
+.logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.logo-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.logo-text {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+}
+
+/* Size Variants */
+.logo-small .logo-img {
+    width: 24px;
+    height: 24px;
+}
+
+.logo-small .logo-text {
+    font-size: 14px;
+}
+
+.logo-medium .logo-img {
+    width: 32px;
+    height: 32px;
+}
+
+.logo-medium .logo-text {
+    font-size: 18px;
+}
+
+.logo-large .logo-img {
+    width: 48px;
+    height: 48px;
+}
+
+.logo-large .logo-text {
+    font-size: 24px;
+}
+
+.logo-xlarge .logo-img {
+    width: 64px;
+    height: 64px;
+}
+
+.logo-xlarge .logo-text {
+    font-size: 32px;
+}
+
+/* Color Variants */
+.logo-default .logo-text {
+    color: #1f2937;
+}
+
+.logo-white .logo-text {
+    color: #ffffff;
+}
+
+.logo-dark .logo-text {
+    color: #111827;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .logo-large .logo-img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .logo-large .logo-text {
+        font-size: 20px;
+    }
+
+    .logo-xlarge .logo-img {
+        width: 48px;
+        height: 48px;
+    }
+
+    .logo-xlarge .logo-text {
+        font-size: 24px;
+    }
+}
+
+/* Hover effects */
+.logo:hover .logo-img {
+    transform: scale(1.05);
+}
+
+.logo:hover .logo-text {
+    color: #6366f1;
+}
+
+/* Animation for loading states */
+@keyframes logoPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.logo.loading {
+    animation: logoPulse 1.5s ease-in-out infinite;
+}
+
+/* Logo in different contexts */
+.navbar .logo {
+    gap: 6px;
+}
+
+.footer .logo {
+    gap: 10px;
+}
+
+.hero .logo {
+    gap: 12px;
+}
+
+/* Accessibility */
+.logo:focus {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.logo-button:focus {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
