@@ -53,20 +53,38 @@ export const SocketProvider = ({ children }) => {
                 console.log('📦 New order available:', orderData);
                 setOrders(prev => [orderData, ...prev]);
 
-                // Play notification sound
+                // Play notification sound (urgent for new orders)
                 try {
                     const audio = new Audio('/notification.mp3');
-                    audio.volume = 0.5;
+                    audio.volume = 0.8; // Louder for new orders
                     audio.play().catch(e => console.log('Audio play failed:', e));
+                    
+                    // Play again after 2 seconds for urgency
+                    setTimeout(() => {
+                        const audio2 = new Audio('/notification.mp3');
+                        audio2.volume = 0.8;
+                        audio2.play().catch(e => console.log('Second audio play failed:', e));
+                    }, 2000);
                 } catch (e) { console.log('Audio not available'); }
 
                 // Show browser notification or fallback alert
                 const title = 'New Order Available';
                 const body = `Order #${orderData.orderNumber || orderData.orderId?.toString().slice(-6) || ''} • Earn: ₹${orderData.estimatedEarnings || orderData.deliveryFee || ''}`;
                 if (window.Notification && Notification.permission === 'granted') {
-                    new Notification(title, { body, icon: '/logo192.png' });
+                    const notification = new Notification(title, { 
+                        body, 
+                        icon: '/logo192.png',
+                        requireInteraction: true // Keep notification visible until user interacts
+                    });
+                    
+                    // Also show an alert after 5 seconds if user hasn't interacted
+                    setTimeout(() => {
+                        if (!notification.clicked) {
+                            alert(`📦 NEW ORDER ALERT!\n\n${body}\n\nDon't miss this opportunity!`);
+                        }
+                    }, 5000);
                 } else {
-                    alert(`${title}\n\n${body}`);
+                    alert(`📦 NEW ORDER ALERT!\n\n${body}\n\nDon't miss this opportunity!`);
                 }
             });
 
@@ -99,11 +117,18 @@ export const SocketProvider = ({ children }) => {
                 console.log('✅ Revision approved:', data);
                 console.log('Current orders before update:', orders);
 
-                // Play notification sound
+                // Play notification sound (urgent for revision approval)
                 try {
                     const audio = new Audio('/notification.mp3');
-                    audio.volume = 0.5;
+                    audio.volume = 0.8;
                     audio.play().catch(e => console.log('Audio play failed:', e));
+                    
+                    // Play a second notification sound for emphasis
+                    setTimeout(() => {
+                        const audio2 = new Audio('/notification.mp3');
+                        audio2.volume = 0.6;
+                        audio2.play().catch(e => console.log('Second audio play failed:', e));
+                    }, 1500);
                 } catch (error) {
                     console.log('Audio creation failed:', error);
                 }
@@ -112,13 +137,19 @@ export const SocketProvider = ({ children }) => {
                 const displayTotal = data.newTotal || data.orderData?.totalAmount || 'Updated';
 
                 if (window.Notification && Notification.permission === 'granted') {
-                    new Notification('Revision Approved', {
-                        body: `Order #${data.orderNumber} revision approved. New total: ₹${displayTotal}`,
-                        icon: '/logo192.png'
+                    new Notification('✅ Revision Approved!', {
+                        body: `Order #${data.orderNumber} revision approved. New total: ₹${displayTotal}. Proceed with final shopping!`,
+                        icon: '/logo192.png',
+                        requireInteraction: true
                     });
                 } else {
-                    alert(`Revision approved for Order #${data.orderNumber}. New total: ₹${displayTotal}`);
+                    alert(`✅ REVISION APPROVED!\n\nOrder #${data.orderNumber}\nNew total: ₹${displayTotal}\n\nYou can now proceed with final shopping!`);
                 }
+                
+                // Show additional prominent alert
+                setTimeout(() => {
+                    alert(`🎉 Great news! Customer approved your revision for Order #${data.orderNumber}!\n\nNew total: ₹${displayTotal}\n\nProceed with final shopping now.`);
+                }, 2000);
 
                 // Update the order in the orders list
                 setOrders(prev => {
