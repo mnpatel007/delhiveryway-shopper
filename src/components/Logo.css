@@ -39,9 +39,10 @@
 
 .logo-text {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-weight: 800;
+    letter-spacing: -0.01em;
     white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Size Variants */
@@ -51,47 +52,51 @@
 }
 
 .logo-small .logo-text {
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .logo-medium .logo-img {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
 }
 
 .logo-medium .logo-text {
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .logo-large .logo-img {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
 }
 
 .logo-large .logo-text {
-    font-size: 20px;
+    font-size: 22px;
 }
 
 .logo-xlarge .logo-img {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
 }
 
 .logo-xlarge .logo-text {
-    font-size: 24px;
+    font-size: 26px;
 }
 
 /* Color Variants */
 .logo-default .logo-text {
     color: #1f2937;
+    font-weight: 800;
 }
 
 .logo-white .logo-text {
     color: #ffffff;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .logo-dark .logo-text {
     color: #111827;
+    font-weight: 800;
 }
 
 /* Responsive adjustments */

@@ -477,7 +477,7 @@ const Dashboard = () => {
         <div className="dashboard">
             <header className="dashboard-header">
                 <div className="header-left">
-                    <Logo size="medium" showText={true} />
+                    <Logo size="large" showText={true} />
                     <h1>Personal Shopper Dashboard</h1>
                     <div className="status-indicator">
                         <span className={`status-dot ${connected ? 'connected' : 'disconnected'}`}></span>

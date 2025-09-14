@@ -27,7 +27,7 @@
 .header-left {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
 }
 
 .header-left h1 {
