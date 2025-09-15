@@ -243,20 +243,33 @@ const Dashboard = () => {
                 <div className="orders-list">
                     {activeOrders.map(order => (
                         <div key={order._id} className="order-card enhanced">
+                            {/* Debug: Log order data */}
+                            {console.log('🔍 Order data:', {
+                                id: order._id,
+                                orderNumber: order.orderNumber,
+                                totalAmount: order.totalAmount,
+                                orderValue: order.orderValue,
+                                shopId: order.shopId,
+                                shopName: order.shopId?.name,
+                                amount: order.amount,
+                                finalAmount: order.finalAmount,
+                                shopperCommission: order.shopperCommission,
+                                deliveryFee: order.deliveryFee
+                            })}
                             <div className="order-header">
                                 <div className="order-info">
                                     <h4>Order #{order.orderNumber || order._id?.slice(-8)}</h4>
                                     <span className="order-time">2 mins ago</span>
                                 </div>
                                 <div className="order-value">
-                                    <span className="order-amount">₹{order.totalAmount || order.orderValue?.total || 0}</span>
-                                    <span className="estimated-earning">Earn: ₹{order.shopperCommission || order.orderValue?.deliveryFee || 0}</span>
+                                    <span className="order-amount">₹{(order.totalAmount || order.orderValue?.total || order.amount || order.finalAmount || 0).toFixed(2)}</span>
+                                    <span className="estimated-earning">Earn: ₹{(order.shopperCommission || order.orderValue?.deliveryFee || order.deliveryFee || 30).toFixed(2)}</span>
                                 </div>
                             </div>
 
                             <div className="order-details">
                                 <div className="shop-info">
-                                    <span className="shop-name">🏪 {order.shopId?.name || order.shop?.name || 'Local Shop'}</span>
+                                    <span className="shop-name">🏪 {order.shopId?.name || order.shop?.name || order.shopName || 'Shop'}</span>
                                     <span className="shop-distance">📍 1.2 km away</span>
                                 </div>
 
