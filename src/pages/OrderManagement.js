@@ -480,6 +480,11 @@ const OrderManagement = () => {
                                     <p><strong>Phone:</strong> {order.deliveryAddress?.contactPhone || order.customerId?.phone}</p>
                                 </div>
 
+                                <div className="shop-info">
+                                    <p><strong>Shop:</strong> {order.shopId?.name || order.shop?.name || order.shopName || 'Shop'}</p>
+                                    <p><strong>Category:</strong> {order.shopId?.category || 'General'}</p>
+                                </div>
+
                                 <div className="delivery-info">
                                     <p><strong>Delivery Address:</strong></p>
                                     <p>{order.deliveryAddress?.street}, {order.deliveryAddress?.city}</p>

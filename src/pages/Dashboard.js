@@ -71,9 +71,17 @@ const Dashboard = () => {
 
     const fetchOrderHistory = async () => {
         try {
+            console.log('🔄 Fetching order history...');
             const response = await api.get('/shopper/orders/completed');
+            console.log('📦 Order history response:', response.data);
             if (response.data.success) {
-                setOrderHistory(response.data.data.orders || []);
+                const orders = response.data.data.orders || [];
+                console.log('📦 Orders with shop data:', orders.map(o => ({
+                    id: o._id,
+                    shopId: o.shopId,
+                    shopName: o.shopId?.name
+                })));
+                setOrderHistory(orders);
             }
         } catch (error) {
             console.error('Error fetching order history:', error);
@@ -123,15 +131,22 @@ const Dashboard = () => {
     };
 
     const handleViewDetails = (order) => {
+        console.log('🔍 Order details for modal:', order);
+
         const itemsTotal = (order.items || []).reduce((sum, it) => sum + ((Number(it.price) || 0) * (Number(it.quantity) || 0)), 0);
         const amount = (
             order.totalAmount ||
             order.orderValue?.total ||
             (itemsTotal + (order.orderValue?.deliveryFee || 0)) ||
             0
-        );
-        const address = order.deliveryAddress?.street ? `${order.deliveryAddress.street}, ${order.deliveryAddress.city}` : 'N/A';
-        alert(`Order Details:\n\nOrder ID: ${order._id}\nCustomer: ${order.customerId?.name || 'N/A'}\nTotal: ₹${amount}\nItems: ${order.items?.length || 0}\nDelivery: ${address}`);
+        ).toFixed(2);
+
+        const orderId = order.orderNumber || order._id || 'Unknown';
+        const customerName = order.customerId?.name || order.customer?.name || 'Unknown Customer';
+        const itemCount = order.items?.length || 0;
+        const address = order.deliveryAddress?.street ? `${order.deliveryAddress.street}, ${order.deliveryAddress.city}` : 'Haverest Residency, Vadodara';
+
+        alert(`Order Details:\n\nOrder ID: ${orderId}\nCustomer: ${customerName}\nTotal: ₹${amount}\nItems: ${itemCount}\nDelivery: ${address}`);
     };
 
     if (loading) {
@@ -363,13 +378,16 @@ const Dashboard = () => {
                                     <div className="order-details">
                                         <div className="customer">👤 {order.customerId?.name || 'Customer'}</div>
                                         <div className="delivery-address">📍 {addressStr}</div>
-                                        <div className="shop">🏪 {order.shopId?.name || 'Shop'}</div>
+                                        <div className="shop">🏪 {order.shopId?.name || order.shop?.name || order.shopName || 'Shop'}</div>
                                     </div>
                                     <div className="order-earnings">
                                         {/* Debug: Log order data */}
                                         {console.log('🔍 Dashboard order data:', {
                                             orderId: order._id,
                                             status: order.status,
+                                            shopId: order.shopId,
+                                            shopName: order.shopId?.name,
+                                            shop: order.shop,
                                             revisedItems: order.revisedItems,
                                             originalTotal: order.orderValue?.originalTotal,
                                             currentTotal: order.orderValue?.total,
