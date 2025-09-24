@@ -258,8 +258,8 @@ const Dashboard = () => {
                 <div className="orders-list">
                     {activeOrders.map(order => (
                         <div key={order._id} className="order-card enhanced">
-                            {/* Debug: Log order data */}
-                            {console.log('🔍 Order data:', {
+                            {/* Debug: Log order data (development only) */}
+                            {process.env.NODE_ENV === 'development' && console.log('🔍 Order data:', {
                                 id: order._id,
                                 orderNumber: order.orderNumber,
                                 totalAmount: order.totalAmount,
@@ -381,8 +381,8 @@ const Dashboard = () => {
                                         <div className="shop">🏪 {order.shopId?.name || order.shop?.name || order.shopName || 'Shop'}</div>
                                     </div>
                                     <div className="order-earnings">
-                                        {/* Debug: Log order data */}
-                                        {console.log('🔍 Dashboard order data:', {
+                                        {/* Debug: Log order data (development only) */}
+                                        {process.env.NODE_ENV === 'development' && console.log('🔍 Dashboard order data:', {
                                             orderId: order._id,
                                             status: order.status,
                                             shopId: order.shopId,

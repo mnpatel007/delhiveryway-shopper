@@ -434,8 +434,8 @@ const OrderManagement = () => {
                                     <h3>Order #{order.orderNumber}</h3>
                                     {getStatusBadge(order.status)}
                                 </div>
-                                {/* Debug: Log order data */}
-                                {console.log('🔍 Order data for display:', {
+                                {/* Debug: Log order data (development only) */}
+                                {process.env.NODE_ENV === 'development' && console.log('🔍 Order data for display:', {
                                     orderId: order._id,
                                     status: order.status,
                                     revisedItems: order.revisedItems,
