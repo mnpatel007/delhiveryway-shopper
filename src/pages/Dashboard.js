@@ -6,6 +6,32 @@ import OrderManagement from './OrderManagement';
 import Logo from '../components/Logo';
 import './Dashboard.css';
 
+// Force CSS to load immediately
+const dashboardStyles = `
+.dashboard { 
+    min-height: 100vh !important; 
+    background-color: #f8f9fa !important; 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !important; 
+}
+.dashboard .order-card.enhanced { 
+    background: white !important; 
+    border-radius: 12px !important; 
+    padding: 25px !important; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important; 
+    border: 1px solid #e9ecef !important; 
+    margin-bottom: 20px !important; 
+    display: block !important; 
+    width: 100% !important; 
+}
+`;
+
+// Inject styles immediately
+if (typeof document !== 'undefined') {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = dashboardStyles;
+    document.head.appendChild(styleElement);
+}
+
 const Dashboard = () => {
     const { shopper, logout, updateOnlineStatus, loading } = useAuth();
     const { connected, orders } = useSocket();
@@ -56,16 +82,36 @@ const Dashboard = () => {
     }, [shopper?._id, shopper?.stats?.totalEarnings]);
 
     useEffect(() => {
-        // Fetch active orders and earnings data
-        fetchActiveOrders();
-        fetchEarnings();
-        fetchOrderHistory();
+        // Fetch active orders and earnings data immediately
+        const initializeData = async () => {
+            await Promise.all([
+                fetchActiveOrders(),
+                fetchEarnings(),
+                fetchOrderHistory()
+            ]);
+        };
+
+        initializeData();
     }, [fetchEarnings]);
 
-    // Sync socket orders with activeOrders state
+    // Sync socket orders with activeOrders state, but only if they have complete data
     useEffect(() => {
         if (orders && orders.length > 0) {
-            setActiveOrders(orders);
+            // Filter out orders that don't have proper amount data
+            const validOrders = orders.filter(order => {
+                const hasValidAmount = order.totalAmount > 0 ||
+                    order.orderValue?.total > 0 ||
+                    order.amount > 0 ||
+                    order.finalAmount > 0;
+                return hasValidAmount;
+            });
+
+            if (validOrders.length > 0) {
+                setActiveOrders(validOrders);
+            } else {
+                // If socket orders don't have valid amounts, fetch from API
+                fetchActiveOrders();
+            }
         }
     }, [orders]);
 
@@ -92,13 +138,29 @@ const Dashboard = () => {
 
     const fetchActiveOrders = async () => {
         try {
+            console.log('🔄 Fetching available orders...');
             const response = await api.get('/shopper/orders/available');
             if (response.data.success) {
-                setActiveOrders(response.data.data.orders || []);
-                console.log('Available orders fetched:', response.data.data.orders?.length || 0);
+                const orders = response.data.data.orders || [];
+                console.log('📦 Raw orders data:', orders);
+
+                // Log each order's amount data for debugging
+                orders.forEach((order, index) => {
+                    console.log(`📦 Order ${index + 1} amounts:`, {
+                        id: order._id,
+                        totalAmount: order.totalAmount,
+                        orderValue: order.orderValue,
+                        amount: order.amount,
+                        finalAmount: order.finalAmount,
+                        items: order.items?.length || 0
+                    });
+                });
+
+                setActiveOrders(orders);
+                console.log('✅ Available orders set:', orders.length);
             }
         } catch (error) {
-            console.error('Error fetching available orders:', error);
+            console.error('❌ Error fetching available orders:', error);
             setActiveOrders([]);
         }
     };
@@ -257,7 +319,16 @@ const Dashboard = () => {
             ) : (
                 <div className="orders-list">
                     {activeOrders.map(order => (
-                        <div key={order._id} className="order-card enhanced">
+                        <div key={order._id} className="order-card enhanced" style={{
+                            background: 'white',
+                            borderRadius: '12px',
+                            padding: '25px',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                            border: '1px solid #e9ecef',
+                            marginBottom: '20px',
+                            display: 'block',
+                            width: '100%'
+                        }}>
                             {/* Debug: Log order data (development only) */}
                             {process.env.NODE_ENV === 'development' && console.log('🔍 Order data:', {
                                 id: order._id,
@@ -277,7 +348,35 @@ const Dashboard = () => {
                                     <span className="order-time">2 mins ago</span>
                                 </div>
                                 <div className="order-value">
-                                    <span className="order-amount">₹{(order.totalAmount || order.orderValue?.total || order.amount || order.finalAmount || 0).toFixed(2)}</span>
+                                    {(() => {
+                                        // Calculate order amount with better fallback logic
+                                        let orderAmount = 0;
+
+                                        if (order.totalAmount && order.totalAmount > 0) {
+                                            orderAmount = order.totalAmount;
+                                        } else if (order.orderValue?.total && order.orderValue.total > 0) {
+                                            orderAmount = order.orderValue.total;
+                                        } else if (order.amount && order.amount > 0) {
+                                            orderAmount = order.amount;
+                                        } else if (order.finalAmount && order.finalAmount > 0) {
+                                            orderAmount = order.finalAmount;
+                                        } else if (order.items && order.items.length > 0) {
+                                            // Calculate from items if no total is available
+                                            const itemsTotal = order.items.reduce((sum, item) => {
+                                                return sum + ((item.price || 0) * (item.quantity || 1));
+                                            }, 0);
+                                            const deliveryFee = order.orderValue?.deliveryFee || order.deliveryFee || 30;
+                                            orderAmount = itemsTotal + deliveryFee;
+                                        } else {
+                                            orderAmount = 0;
+                                        }
+
+                                        return (
+                                            <span className="order-amount">
+                                                {orderAmount > 0 ? `₹${orderAmount.toFixed(2)}` : 'Loading...'}
+                                            </span>
+                                        );
+                                    })()}
                                     <span className="estimated-earning">Earn: ₹{(order.shopperCommission || order.orderValue?.deliveryFee || order.deliveryFee || 30).toFixed(2)}</span>
                                 </div>
                             </div>
@@ -505,8 +604,20 @@ const Dashboard = () => {
     );
 
     return (
-        <div className="dashboard">
-            <header className="dashboard-header">
+        <div className="dashboard" style={{
+            minHeight: '100vh',
+            backgroundColor: '#f8f9fa',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif'
+        }}>
+            <header className="dashboard-header" style={{
+                background: 'white',
+                padding: '20px',
+                borderBottom: '1px solid #e9ecef',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+            }}>
                 <div className="header-left">
                     <Logo size="large" showText={true} />
                     <h1>Personal Shopper Dashboard</h1>

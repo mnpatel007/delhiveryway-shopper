@@ -1,3 +1,17 @@
+/* Force CSS to load immediately and override any conflicting styles */
+.dashboard {
+    all: initial !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !important;
+}
+
+.dashboard * {
+    box-sizing: border-box !important;
+}
+
+.dashboard *:not(input):not(select):not(textarea) {
+    font-family: inherit !important;
+}
+
 :root {
     --primary-color: #27ae60;
     --secondary-color: #2ecc71;
@@ -14,7 +28,9 @@
 
 .dashboard {
     min-height: 100vh;
-    background-color: var(--background-color);
+    background-color: var(--background-color) !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !important;
+    color: var(--text-color) !important;
 }
 
 .dashboard-header {
@@ -482,24 +498,28 @@ input:checked+.slider:before {
     gap: 20px;
 }
 
-.order-card.enhanced {
-    background: white;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--border-color);
-    transition: transform 0.3s ease;
+.dashboard .order-card.enhanced {
+    background: white !important;
+    border-radius: 12px !important;
+    padding: 25px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid var(--border-color) !important;
+    transition: transform 0.3s ease !important;
+    margin-bottom: 20px !important;
+    display: block !important;
+    width: 100% !important;
 }
 
 .order-card.enhanced:hover {
     transform: translateY(-2px);
 }
 
-.order-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
+.dashboard .order-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    margin-bottom: 20px !important;
+    width: 100% !important;
 }
 
 .order-info h4 {
