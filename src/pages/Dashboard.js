@@ -125,9 +125,23 @@ const Dashboard = () => {
                 console.log('📦 Orders with shop data:', orders.map(o => ({
                     id: o._id,
                     shopId: o.shopId,
-                    shopName: o.shopId?.name
+                    shopName: o.shopId?.name,
+                    date: o.deliveredAt || o.updatedAt
                 })));
-                setOrderHistory(orders);
+
+                // Sort orders by date (most recent first)
+                const sortedOrders = orders.sort((a, b) => {
+                    const dateA = new Date(a.deliveredAt || a.updatedAt || a.createdAt);
+                    const dateB = new Date(b.deliveredAt || b.updatedAt || b.createdAt);
+                    return dateB - dateA; // Descending order (newest first)
+                });
+
+                console.log('📦 Sorted orders by date:', sortedOrders.map(o => ({
+                    id: o._id?.slice(-8),
+                    date: new Date(o.deliveredAt || o.updatedAt || o.createdAt).toLocaleDateString()
+                })));
+
+                setOrderHistory(sortedOrders);
             }
         } catch (error) {
             console.error('Error fetching order history:', error);
@@ -471,7 +485,26 @@ const Dashboard = () => {
                                     <div className="order-info">
                                         <div className="order-id">Order #{order.orderNumber || order._id?.slice(-8)}</div>
                                         <div className="order-date">
-                                            {new Date(order.deliveredAt || order.updatedAt).toLocaleDateString()}
+                                            {(() => {
+                                                const date = new Date(order.deliveredAt || order.updatedAt || order.createdAt);
+                                                const now = new Date();
+                                                const diffTime = Math.abs(now - date);
+                                                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                                                if (diffDays === 1) {
+                                                    return 'Today';
+                                                } else if (diffDays === 2) {
+                                                    return 'Yesterday';
+                                                } else if (diffDays <= 7) {
+                                                    return `${diffDays - 1} days ago`;
+                                                } else {
+                                                    return date.toLocaleDateString('en-IN', {
+                                                        day: '2-digit',
+                                                        month: '2-digit',
+                                                        year: 'numeric'
+                                                    });
+                                                }
+                                            })()}
                                         </div>
                                     </div>
                                     <div className="order-details">
