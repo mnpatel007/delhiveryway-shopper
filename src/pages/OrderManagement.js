@@ -3,6 +3,38 @@ import api from '../services/api';
 import { useSocket } from '../context/SocketContext';
 import './OrderManagement.css';
 
+// Component to display items list with expand/collapse functionality
+const ItemsList = ({ items }) => {
+    const [showAll, setShowAll] = useState(false);
+    const displayItems = showAll ? items : items.slice(0, 3);
+    const hasMoreItems = items.length > 3;
+
+    return (
+        <div className="items-list">
+            <ul>
+                {displayItems.map((item, index) => (
+                    <li key={index}>
+                        {item.name} × {item.revisedQuantity || item.quantity}
+                        {!item.isAvailable && <span className="unavailable"> (Unavailable)</span>}
+                    </li>
+                ))}
+            </ul>
+            {hasMoreItems && (
+                <button
+                    className="toggle-items-btn"
+                    onClick={() => setShowAll(!showAll)}
+                    type="button"
+                >
+                    {showAll
+                        ? `Show Less`
+                        : `Show ${items.length - 3} More Items`
+                    }
+                </button>
+            )}
+        </div>
+    );
+};
+
 const OrderManagement = () => {
     const { orders: socketOrders, fetchShopperOrders: socketFetchOrders } = useSocket();
     const [orders, setOrders] = useState([]);
@@ -495,15 +527,7 @@ const OrderManagement = () => {
 
                                 <div className="items-info">
                                     <p><strong>Items ({order.items?.length || 0}):</strong></p>
-                                    <ul>
-                                        {order.items?.slice(0, 3).map((item, index) => (
-                                            <li key={index}>
-                                                {item.name} × {item.revisedQuantity || item.quantity}
-                                                {!item.isAvailable && <span className="unavailable"> (Unavailable)</span>}
-                                            </li>
-                                        ))}
-                                        {order.items?.length > 3 && <li>...and {order.items.length - 3} more items</li>}
-                                    </ul>
+                                    <ItemsList items={order.items || []} />
                                 </div>
                             </div>
 
