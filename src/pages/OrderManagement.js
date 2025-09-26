@@ -357,35 +357,83 @@ const OrderManagement = () => {
                                 </div>
 
                                 <div className="revision-controls">
-                                    <label>
-                                        <input
-                                            type="checkbox"
-                                            checked={item.isAvailable}
-                                            onChange={(e) => handleItemRevision(item.itemId, 'isAvailable', e.target.checked)}
-                                        />
-                                        Available
-                                    </label>
+                                    <div className="availability-control">
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                checked={item.isAvailable}
+                                                onChange={(e) => handleItemRevision(item.itemId, 'isAvailable', e.target.checked)}
+                                            />
+                                            Available in Store
+                                        </label>
+                                    </div>
 
                                     {item.isAvailable && (
                                         <>
                                             <div className="input-group">
                                                 <label>Quantity:</label>
-                                                <input
-                                                    type="number"
-                                                    min="1"
-                                                    value={item.quantity}
-                                                    onChange={(e) => handleItemRevision(item.itemId, 'quantity', parseInt(e.target.value))}
-                                                />
+                                                <div className="number-input-container">
+                                                    <button
+                                                        type="button"
+                                                        className="number-btn decrease"
+                                                        onClick={() => {
+                                                            const newValue = Math.max(1, item.quantity - 1);
+                                                            handleItemRevision(item.itemId, 'quantity', newValue);
+                                                        }}
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input
+                                                        type="number"
+                                                        min="1"
+                                                        value={item.quantity}
+                                                        onChange={(e) => handleItemRevision(item.itemId, 'quantity', parseInt(e.target.value) || 1)}
+                                                        className="number-input"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="number-btn increase"
+                                                        onClick={() => {
+                                                            handleItemRevision(item.itemId, 'quantity', item.quantity + 1);
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
                                             </div>
 
                                             <div className="input-group">
-                                                <label>Price:</label>
-                                                <input
-                                                    type="number"
-                                                    step="0.01"
-                                                    value={item.price}
-                                                    onChange={(e) => handleItemRevision(item.itemId, 'price', parseFloat(e.target.value))}
-                                                />
+                                                <label>Price (₹):</label>
+                                                <div className="number-input-container">
+                                                    <button
+                                                        type="button"
+                                                        className="number-btn decrease"
+                                                        onClick={() => {
+                                                            const newValue = Math.max(0.01, item.price - 0.5);
+                                                            handleItemRevision(item.itemId, 'price', parseFloat(newValue.toFixed(2)));
+                                                        }}
+                                                    >
+                                                        −
+                                                    </button>
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0.01"
+                                                        value={item.price}
+                                                        onChange={(e) => handleItemRevision(item.itemId, 'price', parseFloat(e.target.value) || 0.01)}
+                                                        className="number-input"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="number-btn increase"
+                                                        onClick={() => {
+                                                            const newValue = item.price + 0.5;
+                                                            handleItemRevision(item.itemId, 'price', parseFloat(newValue.toFixed(2)));
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
                                             </div>
                                         </>
                                     )}
