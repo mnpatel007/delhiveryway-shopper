@@ -238,7 +238,7 @@ const OrderManagement = () => {
             return sum + (price * quantity);
         }, 0) || 0;
 
-        const totalAmount = order.totalAmount || order.orderValue?.total || itemsTotal;
+
 
         // Format address
         const address = order.deliveryAddress ?
