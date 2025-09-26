@@ -273,8 +273,6 @@ ${itemsList}
 
 💰 *Order Summary:*
 Items Total: ₹${itemsTotal.toFixed(2)}
-Delivery Fee: ₹0.00
-*Total Amount: ₹${totalAmount.toFixed(2)}*
 
 📱 *Shared via DelhiveryWay Shopper App*`;
 
