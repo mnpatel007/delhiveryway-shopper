@@ -225,6 +225,137 @@ const OrderManagement = () => {
         updateOrderStatus(orderId, 'delivered');
     };
 
+    const generateOrderSummary = (order) => {
+        const orderNumber = order.orderNumber || order._id?.slice(-8) || 'N/A';
+        const customerName = order.customerId?.name || 'Unknown Customer';
+        const customerPhone = order.deliveryAddress?.contactPhone || order.customerId?.phone || 'N/A';
+        const shopName = order.shopId?.name || order.shop?.name || order.shopName || 'Shop';
+
+        // Calculate totals
+        const itemsTotal = order.items?.reduce((sum, item) => {
+            const price = parseFloat(item.price || 0);
+            const quantity = parseInt(item.quantity || 1);
+            return sum + (price * quantity);
+        }, 0) || 0;
+
+        const totalAmount = order.totalAmount || order.orderValue?.total || itemsTotal;
+
+        // Format address
+        const address = order.deliveryAddress ?
+            `${order.deliveryAddress.street || ''}, ${order.deliveryAddress.city || ''}${order.deliveryAddress.zipCode ? ' - ' + order.deliveryAddress.zipCode : ''}` :
+            'Address not provided';
+
+        // Format items list
+        const itemsList = order.items?.map((item, index) => {
+            const price = parseFloat(item.price || 0);
+            const quantity = parseInt(item.quantity || 1);
+            const itemTotal = price * quantity;
+            return `${index + 1}. ${item.name}\n   Qty: ${quantity} × ₹${price.toFixed(2)} = ₹${itemTotal.toFixed(2)}`;
+        }).join('\n\n') || 'No items';
+
+        // Create comprehensive order summary
+        const orderSummary = `🛒 *DelhiveryWay Order Details*
+
+📋 *Order #${orderNumber}*
+🏪 *Shop:* ${shopName}
+📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
+
+👤 *Customer Details:*
+Name: ${customerName}
+Phone: ${customerPhone}
+
+📍 *Delivery Address:*
+${address}
+${order.deliveryAddress?.instructions ? `\nInstructions: ${order.deliveryAddress.instructions}` : ''}
+
+🛍️ *Items Ordered:*
+${itemsList}
+
+💰 *Order Summary:*
+Items Total: ₹${itemsTotal.toFixed(2)}
+Delivery Fee: ₹0.00
+*Total Amount: ₹${totalAmount.toFixed(2)}*
+
+📱 *Shared via DelhiveryWay Shopper App*`;
+
+        return orderSummary;
+    };
+
+    const handleShareOrder = (order) => {
+        const orderSummary = generateOrderSummary(order);
+
+        // Check if Web Share API is available (mobile devices)
+        if (navigator.share) {
+            navigator.share({
+                title: `Order #${order.orderNumber || 'Details'}`,
+                text: orderSummary,
+            }).catch((error) => {
+                console.log('Error sharing:', error);
+                fallbackShare(orderSummary);
+            });
+        } else {
+            // Fallback for desktop or unsupported browsers
+            fallbackShare(orderSummary, order);
+        }
+    };
+
+    const fallbackShare = (orderSummary, order) => {
+        // Create share options
+        const encodedText = encodeURIComponent(orderSummary);
+        const customerPhone = order?.deliveryAddress?.contactPhone || order?.customerId?.phone;
+
+        // WhatsApp share (if customer phone is available)
+        const whatsappUrl = customerPhone ?
+            `https://wa.me/91${customerPhone.replace(/\D/g, '')}?text=${encodedText}` :
+            `https://wa.me/?text=${encodedText}`;
+
+        // SMS share (if customer phone is available)
+        const smsUrl = customerPhone ?
+            `sms:+91${customerPhone.replace(/\D/g, '')}?body=${encodedText}` :
+            `sms:?body=${encodedText}`;
+
+        // Create share modal
+        const shareModal = document.createElement('div');
+        shareModal.className = 'share-modal-overlay';
+        shareModal.innerHTML = `
+            <div class="share-modal">
+                <div class="share-header">
+                    <h3>Share Order Details</h3>
+                    <button class="close-share-btn" onclick="this.closest('.share-modal-overlay').remove()">×</button>
+                </div>
+                <div class="share-options">
+                    <a href="${whatsappUrl}" target="_blank" class="share-btn whatsapp">
+                        📱 Share via WhatsApp
+                    </a>
+                    <a href="${smsUrl}" class="share-btn sms">
+                        💬 Share via SMS
+                    </a>
+                    <button class="share-btn copy" onclick="
+                        navigator.clipboard.writeText(\`${orderSummary.replace(/`/g, '\\`')}\`).then(() => {
+                            this.textContent = '✅ Copied!';
+                            setTimeout(() => this.textContent = '📋 Copy to Clipboard', 2000);
+                        });
+                    ">
+                        📋 Copy to Clipboard
+                    </button>
+                </div>
+                <div class="share-preview">
+                    <h4>Preview:</h4>
+                    <pre>${orderSummary}</pre>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(shareModal);
+
+        // Close modal when clicking outside
+        shareModal.addEventListener('click', (e) => {
+            if (e.target === shareModal) {
+                shareModal.remove();
+            }
+        });
+    };
+
     const getStatusActions = (order) => {
         switch (order.status) {
             case 'pending_shopper':
@@ -239,12 +370,20 @@ const OrderManagement = () => {
 
             case 'accepted_by_shopper':
                 return (
-                    <button
-                        className="action-btn primary"
-                        onClick={() => handleArrivedAtShop(order._id)}
-                    >
-                        I've Arrived at Shop
-                    </button>
+                    <div className="action-group">
+                        <button
+                            className="action-btn share"
+                            onClick={() => handleShareOrder(order)}
+                        >
+                            📤 Share Order Details
+                        </button>
+                        <button
+                            className="action-btn primary"
+                            onClick={() => handleArrivedAtShop(order._id)}
+                        >
+                            I've Arrived at Shop
+                        </button>
+                    </div>
                 );
 
             case 'shopper_at_shop':
