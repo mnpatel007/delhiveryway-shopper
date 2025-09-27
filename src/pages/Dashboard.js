@@ -47,6 +47,37 @@ const Dashboard = () => {
     const [orderHistory, setOrderHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(true);
 
+    // Test sound function
+    const testSound = () => {
+        console.log('🔊 Testing ting ting ting sound...');
+
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.frequency.setValueAtTime(2000, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(1000, audioContext.currentTime + 0.1);
+
+                    gainNode.gain.setValueAtTime(0.8, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                }, i * 200);
+            }
+        } catch (error) {
+            console.log('❌ Sound test failed:', error);
+            alert('Sound test failed: ' + error.message);
+        }
+    };
+
 
     const fetchEarnings = useCallback(async () => {
         try {
@@ -680,6 +711,32 @@ const Dashboard = () => {
                 </div>
             </header>
 
+            {/* Sound Test Button */}
+            <div style={{
+                padding: '10px 20px',
+                background: '#fff3cd',
+                borderBottom: '1px solid #ffeaa7',
+                textAlign: 'center'
+            }}>
+                <button
+                    onClick={testSound}
+                    style={{
+                        background: '#ff6b6b',
+                        color: 'white',
+                        border: 'none',
+                        padding: '8px 16px',
+                        borderRadius: '4px',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        marginRight: '10px'
+                    }}
+                >
+                    🔊 Test Ting Ting Ting Sound
+                </button>
+                <span style={{ fontSize: '12px', color: '#666' }}>
+                    Click to test the notification sound
+                </span>
+            </div>
 
             <nav className="dashboard-nav">
                 <button

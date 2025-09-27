@@ -122,24 +122,16 @@ export const SocketProvider = ({ children }) => {
                         }
                     } catch (error) {
                         console.log('Web Audio API failed, trying fallback sound:', error);
-                        // Fallback to regular audio file
+                        // Fallback to multiple beep sounds
                         try {
-                            const audio = new Audio('/notification.mp3');
-                            audio.volume = 1.0;
-                            audio.play().catch(e => console.log('Fallback audio failed:', e));
-
-                            // Play fallback sound 3 times
-                            setTimeout(() => {
-                                const audio2 = new Audio('/notification.mp3');
-                                audio2.volume = 1.0;
-                                audio2.play().catch(e => console.log('Second fallback audio failed:', e));
-                            }, 500);
-
-                            setTimeout(() => {
-                                const audio3 = new Audio('/notification.mp3');
-                                audio3.volume = 1.0;
-                                audio3.play().catch(e => console.log('Third fallback audio failed:', e));
-                            }, 1000);
+                            // Create multiple beep sounds
+                            for (let i = 0; i < 3; i++) {
+                                setTimeout(() => {
+                                    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBS13yO/eizEIHWq+8+OWT');
+                                    audio.volume = 1.0;
+                                    audio.play().catch(e => console.log('Beep audio failed:', e));
+                                }, i * 200);
+                            }
                         } catch (e) {
                             console.log('All audio methods failed:', e);
                         }
@@ -217,7 +209,19 @@ export const SocketProvider = ({ children }) => {
                                 }, i * 200);
                             }
                         } catch (error) {
-                            console.log('Mobile audio failed:', error);
+                            console.log('Mobile audio failed, trying fallback:', error);
+                            // Fallback to multiple beep sounds
+                            try {
+                                for (let i = 0; i < 3; i++) {
+                                    setTimeout(() => {
+                                        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBS13yO/eizEIHWq+8+OWT');
+                                        audio.volume = 1.0;
+                                        audio.play().catch(e => console.log('Mobile beep failed:', e));
+                                    }, i * 200);
+                                }
+                            } catch (e) {
+                                console.log('All mobile audio methods failed:', e);
+                            }
                         }
                     };
 
