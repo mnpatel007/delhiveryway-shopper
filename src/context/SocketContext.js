@@ -127,47 +127,68 @@ export const SocketProvider = ({ children }) => {
                 const showFallbackAlert = () => {
                     // Multiple fallback methods for mobile
                     console.log('📱 Showing fallback alert for mobile');
-
-                    // Method 1: Alert (works on most mobile browsers)
+                    
+                    // Method 1: Multiple alerts for mobile (more aggressive)
                     alert(`📦 NEW ORDER ALERT!\n\n${body}\n\nDon't miss this opportunity!`);
-
-                    // Method 2: Console log for debugging
+                    
+                    // Method 2: Show alert again after 2 seconds for mobile
+                    setTimeout(() => {
+                        alert(`🚨 URGENT: NEW ORDER AVAILABLE!\n\n${body}\n\nClick OK to view order!`);
+                    }, 2000);
+                    
+                    // Method 3: Console log for debugging
                     console.log(`📦 NEW ORDER: ${body}`);
-
-                    // Method 3: Try to show a custom notification element
+                    
+                    // Method 4: Try to show a custom notification element (more prominent)
                     try {
                         const notificationElement = document.createElement('div');
                         notificationElement.style.cssText = `
                             position: fixed;
-                            top: 20px;
-                            left: 50%;
-                            transform: translateX(-50%);
+                            top: 0;
+                            left: 0;
+                            right: 0;
                             background: #ff4444;
                             color: white;
-                            padding: 15px 20px;
-                            border-radius: 8px;
-                            z-index: 10000;
+                            padding: 20px;
+                            z-index: 99999;
                             font-weight: bold;
-                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                            max-width: 90vw;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
                             text-align: center;
+                            font-size: 16px;
+                            border-bottom: 3px solid #cc0000;
                         `;
-                        notificationElement.innerHTML = `📦 NEW ORDER!<br/>${body}`;
+                        notificationElement.innerHTML = `📦 NEW ORDER AVAILABLE!<br/>${body}<br/><small>Tap to view</small>`;
                         document.body.appendChild(notificationElement);
-
-                        // Auto-remove after 10 seconds
+                        
+                        // Make it clickable to focus window
+                        notificationElement.onclick = () => {
+                            window.focus();
+                            if (notificationElement.parentNode) {
+                                notificationElement.parentNode.removeChild(notificationElement);
+                            }
+                        };
+                        
+                        // Auto-remove after 15 seconds
                         setTimeout(() => {
                             if (notificationElement.parentNode) {
                                 notificationElement.parentNode.removeChild(notificationElement);
                             }
-                        }, 10000);
+                        }, 15000);
                     } catch (error) {
                         console.log('❌ Error showing custom notification:', error);
                     }
                 };
 
-                // Try browser notification first, then fallback
-                showNotification();
+                // For mobile, always show fallback alerts regardless of notification permission
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                if (isMobile) {
+                    console.log('📱 Mobile device detected - using aggressive notification method');
+                    showFallbackAlert();
+                } else {
+                    // Try browser notification first, then fallback
+                    showNotification();
+                }
             });
 
             // Listen for order updates

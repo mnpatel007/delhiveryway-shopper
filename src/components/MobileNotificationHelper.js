@@ -179,23 +179,7 @@ const MobileNotificationHelper = () => {
     }
 
     if (notificationStatus === 'granted') {
-        return (
-            <div style={{
-                position: 'fixed',
-                top: '10px',
-                left: '10px',
-                right: '10px',
-                background: '#4CAF50',
-                color: 'white',
-                padding: '8px',
-                borderRadius: '8px',
-                fontSize: '12px',
-                zIndex: 10000,
-                textAlign: 'center'
-            }}>
-                ✅ Mobile notifications enabled
-            </div>
-        );
+        return null; // Don't show anything when notifications are enabled
     }
 
     return null;

@@ -47,30 +47,6 @@ const Dashboard = () => {
     const [orderHistory, setOrderHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(true);
 
-    // Test mobile notification function
-    const testMobileNotification = () => {
-        console.log('🧪 Testing mobile notification...');
-
-        if (window.Notification && Notification.permission === 'granted') {
-            const notification = new Notification('🧪 Test Notification', {
-                body: 'This is a test notification for mobile devices. If you see this, notifications are working!',
-                icon: '/logo192.png',
-                badge: '/logo192.png',
-                tag: 'test-notification',
-                requireInteraction: true,
-                vibrate: [200, 100, 200]
-            });
-
-            notification.onclick = () => {
-                window.focus();
-                notification.close();
-            };
-
-            console.log('✅ Test notification sent');
-        } else {
-            alert('🧪 Test Alert: Notifications are not enabled. Please enable them in your browser settings.');
-        }
-    };
 
     const fetchEarnings = useCallback(async () => {
         try {
@@ -704,32 +680,6 @@ const Dashboard = () => {
                 </div>
             </header>
 
-            {/* Mobile Notification Test Button */}
-            <div style={{
-                padding: '10px 20px',
-                background: '#e3f2fd',
-                borderBottom: '1px solid #bbdefb',
-                textAlign: 'center'
-            }}>
-                <button
-                    onClick={testMobileNotification}
-                    style={{
-                        background: '#2196f3',
-                        color: 'white',
-                        border: 'none',
-                        padding: '8px 16px',
-                        borderRadius: '4px',
-                        fontSize: '14px',
-                        cursor: 'pointer',
-                        marginRight: '10px'
-                    }}
-                >
-                    🧪 Test Mobile Notifications
-                </button>
-                <span style={{ fontSize: '12px', color: '#666' }}>
-                    Click to test if notifications work on your mobile device
-                </span>
-            </div>
 
             <nav className="dashboard-nav">
                 <button
