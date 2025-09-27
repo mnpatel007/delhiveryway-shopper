@@ -28,6 +28,9 @@ const MobileNotificationHelper = () => {
                 setNotificationStatus('default');
                 setShowPermissionPrompt(true);
                 break;
+            default:
+                setNotificationStatus('unknown');
+                break;
         }
     };
 

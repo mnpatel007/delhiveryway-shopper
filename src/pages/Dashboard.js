@@ -46,7 +46,6 @@ const Dashboard = () => {
     const [earningsLoading, setEarningsLoading] = useState(true);
     const [orderHistory, setOrderHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(true);
-    const [notificationTest, setNotificationTest] = useState(false);
 
     // Test mobile notification function
     const testMobileNotification = () => {
