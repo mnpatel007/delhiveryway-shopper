@@ -49,25 +49,6 @@ export const SocketProvider = ({ children }) => {
         } catch (error) {
             console.log('❌ Error checking notification support:', error);
         }
-
-        // Enable audio context on first user interaction (required by some browsers)
-        const enableAudio = () => {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume();
-                }
-                console.log('🔊 Audio context enabled');
-            } catch (error) {
-                console.log('❌ Audio context not supported:', error);
-            }
-        };
-
-        // Enable audio on any user interaction
-        const events = ['click', 'touchstart', 'keydown'];
-        events.forEach(event => {
-            document.addEventListener(event, enableAudio, { once: true });
-        });
     }, []);
 
     useEffect(() => {
@@ -94,57 +75,19 @@ export const SocketProvider = ({ children }) => {
                 console.log('📦 New order available:', orderData);
                 setOrders(prev => [orderData, ...prev]);
 
-                // Play distinctive "ting ting ting" sound for new orders
-                const playTingTingTing = () => {
-                    try {
-                        // Create a distinctive "ting ting ting" sound using Web Audio API
-                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                // Play notification sound (urgent for new orders)
+                try {
+                    const audio = new Audio('/notification.mp3');
+                    audio.volume = 0.8; // Louder for new orders
+                    audio.play().catch(e => console.log('Audio play failed:', e));
 
-                        // Play 3 quick "ting" sounds
-                        for (let i = 0; i < 3; i++) {
-                            setTimeout(() => {
-                                const oscillator = audioContext.createOscillator();
-                                const gainNode = audioContext.createGain();
-
-                                oscillator.connect(gainNode);
-                                gainNode.connect(audioContext.destination);
-
-                                // High frequency "ting" sound
-                                oscillator.frequency.setValueAtTime(2000, audioContext.currentTime);
-                                oscillator.frequency.exponentialRampToValueAtTime(1000, audioContext.currentTime + 0.1);
-
-                                gainNode.gain.setValueAtTime(0.8, audioContext.currentTime);
-                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-                                oscillator.start(audioContext.currentTime);
-                                oscillator.stop(audioContext.currentTime + 0.1);
-                            }, i * 200); // 200ms between each "ting"
-                        }
-                    } catch (error) {
-                        console.log('Web Audio API failed, trying fallback sound:', error);
-                        // Fallback to multiple beep sounds
-                        try {
-                            // Create multiple beep sounds
-                            for (let i = 0; i < 3; i++) {
-                                setTimeout(() => {
-                                    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBS13yO/eizEIHWq+8+OWT');
-                                    audio.volume = 1.0;
-                                    audio.play().catch(e => console.log('Beep audio failed:', e));
-                                }, i * 200);
-                            }
-                        } catch (e) {
-                            console.log('All audio methods failed:', e);
-                        }
-                    }
-                };
-
-                // Play the distinctive sound
-                playTingTingTing();
-
-                // Play again after 3 seconds for extra attention
-                setTimeout(() => {
-                    playTingTingTing();
-                }, 3000);
+                    // Play again after 2 seconds for urgency
+                    setTimeout(() => {
+                        const audio2 = new Audio('/notification.mp3');
+                        audio2.volume = 0.8;
+                        audio2.play().catch(e => console.log('Second audio play failed:', e));
+                    }, 2000);
+                } catch (e) { console.log('Audio not available'); }
 
                 // Show browser notification or fallback alert
                 const title = 'New Order Available';
@@ -184,62 +127,18 @@ export const SocketProvider = ({ children }) => {
                 const showFallbackAlert = () => {
                     // Multiple fallback methods for mobile
                     console.log('📱 Showing fallback alert for mobile');
-
-                    // Play ting ting ting sound for mobile alerts too
-                    const playTingTingTing = () => {
-                        try {
-                            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-                            for (let i = 0; i < 3; i++) {
-                                setTimeout(() => {
-                                    const oscillator = audioContext.createOscillator();
-                                    const gainNode = audioContext.createGain();
-
-                                    oscillator.connect(gainNode);
-                                    gainNode.connect(audioContext.destination);
-
-                                    oscillator.frequency.setValueAtTime(2000, audioContext.currentTime);
-                                    oscillator.frequency.exponentialRampToValueAtTime(1000, audioContext.currentTime + 0.1);
-
-                                    gainNode.gain.setValueAtTime(1.0, audioContext.currentTime);
-                                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-                                    oscillator.start(audioContext.currentTime);
-                                    oscillator.stop(audioContext.currentTime + 0.1);
-                                }, i * 200);
-                            }
-                        } catch (error) {
-                            console.log('Mobile audio failed, trying fallback:', error);
-                            // Fallback to multiple beep sounds
-                            try {
-                                for (let i = 0; i < 3; i++) {
-                                    setTimeout(() => {
-                                        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBS13yO/eizEIHWq+8+OWT');
-                                        audio.volume = 1.0;
-                                        audio.play().catch(e => console.log('Mobile beep failed:', e));
-                                    }, i * 200);
-                                }
-                            } catch (e) {
-                                console.log('All mobile audio methods failed:', e);
-                            }
-                        }
-                    };
-
-                    // Play sound immediately
-                    playTingTingTing();
-
+                    
                     // Method 1: Multiple alerts for mobile (more aggressive)
                     alert(`📦 NEW ORDER ALERT!\n\n${body}\n\nDon't miss this opportunity!`);
-
-                    // Play sound again with second alert
+                    
+                    // Method 2: Show alert again after 2 seconds for mobile
                     setTimeout(() => {
-                        playTingTingTing();
                         alert(`🚨 URGENT: NEW ORDER AVAILABLE!\n\n${body}\n\nClick OK to view order!`);
                     }, 2000);
-
+                    
                     // Method 3: Console log for debugging
                     console.log(`📦 NEW ORDER: ${body}`);
-
+                    
                     // Method 4: Try to show a custom notification element (more prominent)
                     try {
                         const notificationElement = document.createElement('div');
@@ -260,7 +159,7 @@ export const SocketProvider = ({ children }) => {
                         `;
                         notificationElement.innerHTML = `📦 NEW ORDER AVAILABLE!<br/>${body}<br/><small>Tap to view</small>`;
                         document.body.appendChild(notificationElement);
-
+                        
                         // Make it clickable to focus window
                         notificationElement.onclick = () => {
                             window.focus();
@@ -268,7 +167,7 @@ export const SocketProvider = ({ children }) => {
                                 notificationElement.parentNode.removeChild(notificationElement);
                             }
                         };
-
+                        
                         // Auto-remove after 15 seconds
                         setTimeout(() => {
                             if (notificationElement.parentNode) {
@@ -282,7 +181,7 @@ export const SocketProvider = ({ children }) => {
 
                 // For mobile, always show fallback alerts regardless of notification permission
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
+                
                 if (isMobile) {
                     console.log('📱 Mobile device detected - using aggressive notification method');
                     showFallbackAlert();
