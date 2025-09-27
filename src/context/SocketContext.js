@@ -23,10 +23,32 @@ export const SocketProvider = ({ children }) => {
     // Ask for browser notification permission on first mount
     useEffect(() => {
         try {
-            if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-                Notification.requestPermission().catch(() => {});
+            if ('Notification' in window) {
+                console.log('🔔 Current notification permission:', Notification.permission);
+
+                if (Notification.permission === 'default') {
+                    console.log('🔔 Requesting notification permission...');
+                    Notification.requestPermission().then(permission => {
+                        console.log('🔔 Notification permission result:', permission);
+                        if (permission === 'granted') {
+                            console.log('✅ Notifications enabled!');
+                        } else {
+                            console.log('❌ Notifications denied');
+                        }
+                    }).catch(err => {
+                        console.log('❌ Error requesting notification permission:', err);
+                    });
+                } else if (Notification.permission === 'denied') {
+                    console.log('❌ Notifications are blocked. Please enable them in browser settings.');
+                } else {
+                    console.log('✅ Notifications already granted');
+                }
+            } else {
+                console.log('❌ Notifications not supported in this browser');
             }
-        } catch (_) {}
+        } catch (error) {
+            console.log('❌ Error checking notification support:', error);
+        }
     }, []);
 
     useEffect(() => {
@@ -58,7 +80,7 @@ export const SocketProvider = ({ children }) => {
                     const audio = new Audio('/notification.mp3');
                     audio.volume = 0.8; // Louder for new orders
                     audio.play().catch(e => console.log('Audio play failed:', e));
-                    
+
                     // Play again after 2 seconds for urgency
                     setTimeout(() => {
                         const audio2 = new Audio('/notification.mp3');
@@ -70,22 +92,82 @@ export const SocketProvider = ({ children }) => {
                 // Show browser notification or fallback alert
                 const title = 'New Order Available';
                 const body = `Order #${orderData.orderNumber || orderData.orderId?.toString().slice(-6) || ''} • Earn: ₹${orderData.estimatedEarnings || orderData.deliveryFee || ''}`;
-                if (window.Notification && Notification.permission === 'granted') {
-                    const notification = new Notification(title, { 
-                        body, 
-                        icon: '/logo192.png',
-                        requireInteraction: true // Keep notification visible until user interacts
-                    });
-                    
-                    // Also show an alert after 5 seconds if user hasn't interacted
-                    setTimeout(() => {
-                        if (!notification.clicked) {
-                            alert(`📦 NEW ORDER ALERT!\n\n${body}\n\nDon't miss this opportunity!`);
+
+                // Enhanced mobile notification handling
+                const showNotification = () => {
+                    if (window.Notification && Notification.permission === 'granted') {
+                        try {
+                            const notification = new Notification(title, {
+                                body,
+                                icon: '/logo192.png',
+                                badge: '/logo192.png',
+                                tag: 'new-order', // Replace previous notifications
+                                requireInteraction: true, // Keep notification visible until user interacts
+                                vibrate: [200, 100, 200], // Vibration pattern for mobile
+                                silent: false // Ensure sound plays
+                            });
+
+                            // Handle notification click
+                            notification.onclick = () => {
+                                window.focus();
+                                notification.close();
+                            };
+
+                            console.log('✅ Browser notification shown');
+                        } catch (error) {
+                            console.log('❌ Error showing browser notification:', error);
+                            showFallbackAlert();
                         }
-                    }, 5000);
-                } else {
+                    } else {
+                        console.log('❌ Notifications not available or denied');
+                        showFallbackAlert();
+                    }
+                };
+
+                const showFallbackAlert = () => {
+                    // Multiple fallback methods for mobile
+                    console.log('📱 Showing fallback alert for mobile');
+
+                    // Method 1: Alert (works on most mobile browsers)
                     alert(`📦 NEW ORDER ALERT!\n\n${body}\n\nDon't miss this opportunity!`);
-                }
+
+                    // Method 2: Console log for debugging
+                    console.log(`📦 NEW ORDER: ${body}`);
+
+                    // Method 3: Try to show a custom notification element
+                    try {
+                        const notificationElement = document.createElement('div');
+                        notificationElement.style.cssText = `
+                            position: fixed;
+                            top: 20px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            background: #ff4444;
+                            color: white;
+                            padding: 15px 20px;
+                            border-radius: 8px;
+                            z-index: 10000;
+                            font-weight: bold;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                            max-width: 90vw;
+                            text-align: center;
+                        `;
+                        notificationElement.innerHTML = `📦 NEW ORDER!<br/>${body}`;
+                        document.body.appendChild(notificationElement);
+
+                        // Auto-remove after 10 seconds
+                        setTimeout(() => {
+                            if (notificationElement.parentNode) {
+                                notificationElement.parentNode.removeChild(notificationElement);
+                            }
+                        }, 10000);
+                    } catch (error) {
+                        console.log('❌ Error showing custom notification:', error);
+                    }
+                };
+
+                // Try browser notification first, then fallback
+                showNotification();
             });
 
             // Listen for order updates
@@ -122,7 +204,7 @@ export const SocketProvider = ({ children }) => {
                     const audio = new Audio('/notification.mp3');
                     audio.volume = 0.8;
                     audio.play().catch(e => console.log('Audio play failed:', e));
-                    
+
                     // Play a second notification sound for emphasis
                     setTimeout(() => {
                         const audio2 = new Audio('/notification.mp3');
@@ -145,7 +227,7 @@ export const SocketProvider = ({ children }) => {
                 } else {
                     alert(`✅ REVISION APPROVED!\n\nOrder #${data.orderNumber}\nNew total: ₹${displayTotal}\n\nYou can now proceed with final shopping!`);
                 }
-                
+
                 // Show additional prominent alert
                 setTimeout(() => {
                     alert(`🎉 Great news! Customer approved your revision for Order #${data.orderNumber}!\n\nNew total: ₹${displayTotal}\n\nProceed with final shopping now.`);
