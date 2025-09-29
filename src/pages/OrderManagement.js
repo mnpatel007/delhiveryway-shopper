@@ -225,6 +225,33 @@ const OrderManagement = () => {
         updateOrderStatus(orderId, 'delivered');
     };
 
+    const handleCancelOrder = async (orderId) => {
+        const reason = prompt('Please provide a reason for cancelling this order:');
+        if (!reason || !reason.trim()) {
+            alert('Cancellation reason is required');
+            return;
+        }
+        
+        if (window.confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
+            try {
+                const response = await api.put(`/shopper/orders/cancel`, {
+                    orderId,
+                    reason: reason.trim()
+                });
+                
+                if (response.data.success !== false) {
+                    fetchShopperOrders();
+                    alert('Order cancelled successfully');
+                } else {
+                    alert('Failed to cancel order: ' + (response.data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error cancelling order:', error);
+                alert('Failed to cancel order: ' + (error.response?.data?.message || error.message));
+            }
+        }
+    };
+
     const generateOrderSummary = (order) => {
         const orderNumber = order.orderNumber || order._id?.slice(-8) || 'N/A';
         const customerName = order.customerId?.name || 'Unknown Customer';
@@ -380,6 +407,12 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                             onClick={() => handleArrivedAtShop(order._id)}
                         >
                             I've Arrived at Shop
+                        </button>
+                        <button
+                            className="action-btn cancel"
+                            onClick={() => handleCancelOrder(order._id)}
+                        >
+                            ❌ Cancel Order
                         </button>
                     </div>
                 );
