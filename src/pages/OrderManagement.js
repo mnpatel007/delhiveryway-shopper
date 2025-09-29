@@ -234,8 +234,9 @@ const OrderManagement = () => {
         
         if (window.confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
             try {
-                const response = await api.put(`/shopper/orders/cancel`, {
+                const response = await api.put(`/shopper/orders/status`, {
                     orderId,
+                    status: 'cancelled',
                     reason: reason.trim()
                 });
                 
