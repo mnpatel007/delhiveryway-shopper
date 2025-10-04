@@ -38,6 +38,8 @@ const ItemsList = ({ items }) => {
 const OrderManagement = () => {
     const { orders: socketOrders, fetchShopperOrders: socketFetchOrders } = useSocket();
     const [orders, setOrders] = useState([]);
+    const [filteredOrders, setFilteredOrders] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [activeOrder, setActiveOrder] = useState(null);
     const [revisionMode, setRevisionMode] = useState(false);
@@ -87,6 +89,23 @@ const OrderManagement = () => {
             setLoading(false);
         }
     }, [socketOrders]);
+
+    // Filter orders based on search term
+    useEffect(() => {
+        if (!searchTerm.trim()) {
+            setFilteredOrders(orders);
+        } else {
+            const filtered = orders.filter(order => 
+                order.customerId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            setFilteredOrders(filtered);
+        }
+    }, [orders, searchTerm]);
+
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+    };
 
     const updateOrderStatus = async (orderId, status, additionalData = {}) => {
         try {
@@ -660,25 +679,43 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                         <h2>Order Management</h2>
                         <p>Manage your assigned orders through their complete lifecycle</p>
                     </div>
-                    <button
-                        className="refresh-btn"
-                        onClick={fetchShopperOrders}
-                        title="Refresh orders"
-                    >
-                        🔄 Refresh
-                    </button>
+                    <div className="header-controls">
+                        <div className="search-container">
+                            <input
+                                type="text"
+                                placeholder="Search by customer name or order number..."
+                                value={searchTerm}
+                                onChange={handleSearch}
+                                className="search-input"
+                            />
+                            <span className="search-icon">🔍</span>
+                        </div>
+                        <button
+                            className="refresh-btn"
+                            onClick={fetchShopperOrders}
+                            title="Refresh orders"
+                        >
+                            🔄 Refresh
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {orders.length === 0 ? (
+            {searchTerm && (
+                <div className="search-results">
+                    <p>Showing {filteredOrders.length} of {orders.length} orders</p>
+                </div>
+            )}
+
+            {filteredOrders.length === 0 ? (
                 <div className="no-orders">
                     <div className="no-orders-icon">📦</div>
-                    <h3>No orders assigned</h3>
-                    <p>Orders will appear here once customers place them and you accept them.</p>
+                    <h3>{searchTerm ? 'No orders found' : 'No orders assigned'}</h3>
+                    <p>{searchTerm ? 'Try adjusting your search terms' : 'Orders will appear here once customers place them and you accept them.'}</p>
                 </div>
             ) : (
                 <div className="orders-list">
-                    {orders.map(order => (
+                    {filteredOrders.map(order => (
                         <div key={order._id} className="order-card">
                             <div className="order-header">
                                 <div className="order-info">
