@@ -439,17 +439,31 @@ Items Total: ₹${itemsTotal.toFixed(2)}
 
             case 'shopper_at_shop':
                 return (
-                    <button
-                        className="action-btn primary"
-                        onClick={() => handleStartShopping(order._id)}
-                    >
-                        Start Shopping
-                    </button>
+                    <div className="action-group">
+                        <button
+                            className="action-btn share"
+                            onClick={() => handleShareOrder(order)}
+                        >
+                            📤 Share Order Details
+                        </button>
+                        <button
+                            className="action-btn primary"
+                            onClick={() => handleStartShopping(order._id)}
+                        >
+                            Start Shopping
+                        </button>
+                    </div>
                 );
 
             case 'shopping_in_progress':
                 return (
                     <div className="action-group">
+                        <button
+                            className="action-btn share"
+                            onClick={() => handleShareOrder(order)}
+                        >
+                            📤 Share Order Details
+                        </button>
                         <button
                             className="action-btn warning"
                             onClick={() => handleReviseOrder(order)}
@@ -467,32 +481,56 @@ Items Total: ₹${itemsTotal.toFixed(2)}
 
             case 'customer_approved_revision':
                 return (
-                    <button
-                        className="action-btn primary"
-                        onClick={() => handleFinalShopping(order._id)}
-                    >
-                        Start Final Shopping
-                    </button>
+                    <div className="action-group">
+                        <button
+                            className="action-btn share"
+                            onClick={() => handleShareOrder(order)}
+                        >
+                            📤 Share Order Details
+                        </button>
+                        <button
+                            className="action-btn primary"
+                            onClick={() => handleFinalShopping(order._id)}
+                        >
+                            Start Final Shopping
+                        </button>
+                    </div>
                 );
 
             case 'final_shopping':
                 return (
-                    <button
-                        className="action-btn primary"
-                        onClick={() => handleCompleteOrder(order._id)}
-                    >
-                        Complete Order & Start Delivery
-                    </button>
+                    <div className="action-group">
+                        <button
+                            className="action-btn share"
+                            onClick={() => handleShareOrder(order)}
+                        >
+                            📤 Share Order Details
+                        </button>
+                        <button
+                            className="action-btn primary"
+                            onClick={() => handleCompleteOrder(order._id)}
+                        >
+                            Complete Order & Start Delivery
+                        </button>
+                    </div>
                 );
 
             case 'out_for_delivery':
                 return (
-                    <button
-                        className="action-btn success"
-                        onClick={() => handleDelivered(order._id)}
-                    >
-                        Mark as Delivered & Collect Payment
-                    </button>
+                    <div className="action-group">
+                        <button
+                            className="action-btn share"
+                            onClick={() => handleShareOrder(order)}
+                        >
+                            📤 Share Order Details
+                        </button>
+                        <button
+                            className="action-btn success"
+                            onClick={() => handleDelivered(order._id)}
+                        >
+                            Mark as Delivered & Collect Payment
+                        </button>
+                    </div>
                 );
 
             default:
