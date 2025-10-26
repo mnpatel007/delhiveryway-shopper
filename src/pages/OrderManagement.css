@@ -181,6 +181,16 @@
 .order-info h3 {
     margin: 0 0 8px 0;
     color: #2c3e50;
+}
+
+.order-time {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 500;
+    margin-left: 0.5rem;
+    background: #f8f9fa;
+    padding: 2px 8px;
+    border-radius: 4px;
     font-size: 1.3rem;
 }
 

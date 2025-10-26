@@ -95,7 +95,7 @@ const OrderManagement = () => {
         if (!searchTerm.trim()) {
             setFilteredOrders(orders);
         } else {
-            const filtered = orders.filter(order => 
+            const filtered = orders.filter(order =>
                 order.customerId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase())
             );
@@ -250,7 +250,7 @@ const OrderManagement = () => {
             alert('Cancellation reason is required');
             return;
         }
-        
+
         if (window.confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
             try {
                 const response = await api.put(`/shopper/orders/status`, {
@@ -258,7 +258,7 @@ const OrderManagement = () => {
                     status: 'cancelled',
                     reason: reason.trim()
                 });
-                
+
                 if (response.data.success !== false) {
                     fetchShopperOrders();
                     alert('Order cancelled successfully');
@@ -758,6 +758,16 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                             <div className="order-header">
                                 <div className="order-info">
                                     <h3>Order #{order.orderNumber}</h3>
+                                    <span className="order-time">
+                                        {new Date(order.createdAt).toLocaleString('en-IN', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: true
+                                        })}
+                                    </span>
                                     {getStatusBadge(order.status)}
                                 </div>
                                 {/* Debug: Log order data (development only) */}

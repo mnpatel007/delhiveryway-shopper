@@ -530,6 +530,8 @@ input:checked+.slider:before {
 .order-time {
     font-size: 0.8rem;
     color: var(--medium-gray);
+    font-weight: 500;
+    margin-left: 0.5rem;
 }
 
 .order-value {

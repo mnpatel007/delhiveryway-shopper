@@ -360,7 +360,16 @@ const Dashboard = () => {
                             <div className="order-header">
                                 <div className="order-info">
                                     <h4>Order #{order.orderNumber || order._id?.slice(-8)}</h4>
-                                    <span className="order-time">2 mins ago</span>
+                                    <span className="order-time">
+                                        {new Date(order.createdAt).toLocaleString('en-IN', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: true
+                                        })}
+                                    </span>
                                 </div>
                                 <div className="order-value">
                                     {(() => {
