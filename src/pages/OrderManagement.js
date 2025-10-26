@@ -253,21 +253,26 @@ const OrderManagement = () => {
 
         if (window.confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
             try {
+                console.log('🚫 Cancelling order:', orderId, 'with reason:', reason.trim());
+
                 const response = await api.put(`/shopper/orders/status`, {
                     orderId,
                     status: 'cancelled',
                     reason: reason.trim()
                 });
 
+                console.log('📋 Cancel order response:', response.data);
+
                 if (response.data.success !== false) {
-                    fetchShopperOrders();
-                    alert('Order cancelled successfully');
+                    // Refresh orders list
+                    await fetchShopperOrders();
+                    alert('✅ Order cancelled successfully');
                 } else {
-                    alert('Failed to cancel order: ' + (response.data.message || 'Unknown error'));
+                    alert('❌ Failed to cancel order: ' + (response.data.message || 'Unknown error'));
                 }
             } catch (error) {
-                console.error('Error cancelling order:', error);
-                alert('Failed to cancel order: ' + (error.response?.data?.message || error.message));
+                console.error('❌ Error cancelling order:', error);
+                alert('❌ Failed to cancel order: ' + (error.response?.data?.message || error.message));
             }
         }
     };
@@ -452,6 +457,12 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                         >
                             Start Shopping
                         </button>
+                        <button
+                            className="action-btn cancel"
+                            onClick={() => handleCancelOrder(order._id)}
+                        >
+                            ❌ Cancel Order
+                        </button>
                     </div>
                 );
 
@@ -475,6 +486,12 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                             onClick={() => handleFinalShopping(order._id)}
                         >
                             All Items Available - Proceed
+                        </button>
+                        <button
+                            className="action-btn cancel"
+                            onClick={() => handleCancelOrder(order._id)}
+                        >
+                            ❌ Cancel Order
                         </button>
                     </div>
                 );
