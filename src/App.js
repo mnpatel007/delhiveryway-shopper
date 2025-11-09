@@ -6,6 +6,7 @@ import MobileNotificationHelper from './components/MobileNotificationHelper';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import Dashboard from './pages/Dashboard';
+import UPISetup from './components/UPISetup';
 import './App.css';
 
 // Private route component
@@ -40,6 +41,11 @@ function App() {
               <Route path="/dashboard" element={
                 <PrivateRoute>
                   <Dashboard />
+                </PrivateRoute>
+              } />
+              <Route path="/upi-setup" element={
+                <PrivateRoute>
+                  <UPISetup />
                 </PrivateRoute>
               } />
               <Route path="/" element={<Navigate to="/dashboard" />} />

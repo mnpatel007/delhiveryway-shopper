@@ -1,0 +1,120 @@
+.upi-reminder {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    margin: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 6px 25px rgba(255, 107, 107, 0.5);
+    }
+
+    100% {
+        box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+    }
+}
+
+.upi-reminder-content {
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.reminder-icon {
+    font-size: 3rem;
+    flex-shrink: 0;
+}
+
+.reminder-text {
+    flex: 1;
+}
+
+.reminder-text h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.reminder-text p {
+    margin: 0;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+.reminder-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.setup-now-btn {
+    background: white;
+    color: #ff6b6b;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+}
+
+.setup-now-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+.dismiss-btn {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.dismiss-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .upi-reminder {
+        margin: 10px;
+    }
+
+    .upi-reminder-content {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .reminder-actions {
+        flex-direction: row;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .setup-now-btn {
+        flex: 1;
+        max-width: 200px;
+    }
+
+    .dismiss-btn {
+        flex: 1;
+        max-width: 100px;
+    }
+}

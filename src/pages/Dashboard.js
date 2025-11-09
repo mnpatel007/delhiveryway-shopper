@@ -4,6 +4,7 @@ import { useSocket } from '../context/SocketContext';
 import api from '../services/api';
 import OrderManagement from './OrderManagement';
 import Logo from '../components/Logo';
+import UPIReminder from '../components/UPIReminder';
 import './Dashboard.css';
 
 // Force CSS to load immediately
@@ -46,6 +47,8 @@ const Dashboard = () => {
     const [earningsLoading, setEarningsLoading] = useState(true);
     const [orderHistory, setOrderHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(true);
+    const [upiSetup, setUpiSetup] = useState({ isSetup: false, loading: true });
+    const [showUPIReminder, setShowUPIReminder] = useState(true);
 
 
     const fetchEarnings = useCallback(async () => {
@@ -88,7 +91,8 @@ const Dashboard = () => {
             await Promise.all([
                 fetchActiveOrders(),
                 fetchEarnings(),
-                fetchOrderHistory()
+                fetchOrderHistory(),
+                fetchUPIStatus()
             ]);
         };
 
@@ -148,6 +152,22 @@ const Dashboard = () => {
             console.error('Error fetching order history:', error);
         } finally {
             setHistoryLoading(false);
+        }
+    };
+
+    const fetchUPIStatus = async () => {
+        try {
+            const response = await api.get('/shopper/upi/status');
+            if (response.data.success) {
+                setUpiSetup({
+                    isSetup: response.data.data.isSetup,
+                    upiId: response.data.data.upiId,
+                    loading: false
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching UPI status:', error);
+            setUpiSetup({ isSetup: false, loading: false });
         }
     };
 
@@ -689,6 +709,10 @@ const Dashboard = () => {
                 </div>
             </header>
 
+            {/* UPI Setup Reminder */}
+            {!upiSetup.loading && !upiSetup.isSetup && showUPIReminder && (
+                <UPIReminder onDismiss={() => setShowUPIReminder(false)} />
+            )}
 
             <nav className="dashboard-nav">
                 <button
