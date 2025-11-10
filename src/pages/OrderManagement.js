@@ -419,67 +419,6 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                 );
 
             case 'accepted_by_shopper':
-                // Check if payment is completed
-                const isPaymentPending = order.payment?.status === 'awaiting_upi_payment' || order.payment?.status === 'pending';
-
-                if (isPaymentPending) {
-                    return (
-                        <div className="action-group">
-                            <button
-                                className="action-btn share"
-                                onClick={() => handleShareOrder(order)}
-                            >
-                                📤 Share Order Details
-                            </button>
-                            <div className="payment-waiting-message">
-                                <p style={{
-                                    color: '#dc3545',
-                                    fontWeight: 'bold',
-                                    margin: '10px 0',
-                                    padding: '10px',
-                                    background: '#f8d7da',
-                                    borderRadius: '5px',
-                                    textAlign: 'center'
-                                }}>
-                                    ⏳ Waiting for customer payment...
-                                    <br />
-                                    <small>You cannot proceed until the customer completes UPI payment</small>
-                                </p>
-                            </div>
-                            <button
-                                className="action-btn cancel"
-                                onClick={() => handleCancelOrder(order._id)}
-                            >
-                                ❌ Cancel Order
-                            </button>
-                        </div>
-                    );
-                } else {
-                    return (
-                        <div className="action-group">
-                            <button
-                                className="action-btn share"
-                                onClick={() => handleShareOrder(order)}
-                            >
-                                📤 Share Order Details
-                            </button>
-                            <button
-                                className="action-btn primary"
-                                onClick={() => handleArrivedAtShop(order._id)}
-                            >
-                                I've Arrived at Shop
-                            </button>
-                            <button
-                                className="action-btn cancel"
-                                onClick={() => handleCancelOrder(order._id)}
-                            >
-                                ❌ Cancel Order
-                            </button>
-                        </div>
-                    );
-                }
-
-            case 'payment_completed':
                 return (
                     <div className="action-group">
                         <button
