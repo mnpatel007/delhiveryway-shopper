@@ -832,7 +832,7 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                                 <div className="customer-info">
                                     <h4>Customer</h4>
                                     <p><strong>Name:</strong> {order.customerId?.name || 'N/A'}</p>
-                                    <p><strong>Phone:</strong> {order.customerId?.phone || 'N/A'}</p>
+                                    <p><strong>Phone:</strong> {order.deliveryAddress?.contactPhone || order.deliveryAddress?.phone || order.customerId?.phone || 'N/A'}</p>
                                 </div>
 
                                 <div className="delivery-info">
