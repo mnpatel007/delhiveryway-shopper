@@ -852,7 +852,12 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                                 <div className="shop-info">
                                     <h4>Shop</h4>
                                     <p><strong>Name:</strong> {order.shopId?.name || order.shop?.name || 'N/A'}</p>
-                                    <p><strong>Address:</strong> {order.shopId?.address || order.shop?.address || 'N/A'}</p>
+                                    <p><strong>Address:</strong> {(() => {
+                                        const addr = order.shopId?.address || order.shop?.address;
+                                        if (!addr) return 'N/A';
+                                        if (typeof addr === 'string') return addr;
+                                        return `${addr.street || ''}, ${addr.city || ''}`.replace(/^, /, '') || 'N/A';
+                                    })()}</p>
                                 </div>
                             </div>
 
