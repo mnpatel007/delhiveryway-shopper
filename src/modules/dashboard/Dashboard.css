@@ -798,30 +798,5 @@ input:checked+.slider:before {
     .dashboard-header {
         flex-direction: column;
         gap: 15px;
-        align-items: flex-start;
-    }
-
-    .header-right {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .dashboard-nav {
-        overflow-x: auto;
-    }
-
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .profile-header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .setting-item {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
     }
 }

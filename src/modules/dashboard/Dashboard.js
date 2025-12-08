@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useSocket } from '../context/SocketContext';
-import api from '../services/api';
-import OrderManagement from './OrderManagement';
-import Logo from '../components/Logo';
+import { useAuth } from '../core/context/AuthContext';
+import { useSocket } from '../core/context/SocketContext';
+import api from '../core/services/api';
+import OrderManagement from '../orders/OrderManagement';
+import Logo from '../core/components/Logo';
 import './Dashboard.css';
 
 // Force CSS to load immediately

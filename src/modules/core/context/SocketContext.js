@@ -99,8 +99,8 @@ export const SocketProvider = ({ children }) => {
                         try {
                             const notification = new Notification(title, {
                                 body,
-                                icon: '/logo192.png',
-                                badge: '/logo192.png',
+                                icon: '/delhiveryway-logo.jpg',
+                                badge: '/delhiveryway-logo.jpg',
                                 tag: 'new-order', // Replace previous notifications
                                 requireInteraction: true, // Keep notification visible until user interacts
                                 vibrate: [200, 100, 200], // Vibration pattern for mobile
@@ -127,18 +127,18 @@ export const SocketProvider = ({ children }) => {
                 const showFallbackAlert = () => {
                     // Multiple fallback methods for mobile
                     console.log('📱 Showing fallback alert for mobile');
-                    
+
                     // Method 1: Multiple alerts for mobile (more aggressive)
                     alert(`📦 NEW ORDER ALERT!\n\n${body}\n\nDon't miss this opportunity!`);
-                    
+
                     // Method 2: Show alert again after 2 seconds for mobile
                     setTimeout(() => {
                         alert(`🚨 URGENT: NEW ORDER AVAILABLE!\n\n${body}\n\nClick OK to view order!`);
                     }, 2000);
-                    
+
                     // Method 3: Console log for debugging
                     console.log(`📦 NEW ORDER: ${body}`);
-                    
+
                     // Method 4: Try to show a custom notification element (more prominent)
                     try {
                         const notificationElement = document.createElement('div');
@@ -159,7 +159,7 @@ export const SocketProvider = ({ children }) => {
                         `;
                         notificationElement.innerHTML = `📦 NEW ORDER AVAILABLE!<br/>${body}<br/><small>Tap to view</small>`;
                         document.body.appendChild(notificationElement);
-                        
+
                         // Make it clickable to focus window
                         notificationElement.onclick = () => {
                             window.focus();
@@ -167,7 +167,7 @@ export const SocketProvider = ({ children }) => {
                                 notificationElement.parentNode.removeChild(notificationElement);
                             }
                         };
-                        
+
                         // Auto-remove after 15 seconds
                         setTimeout(() => {
                             if (notificationElement.parentNode) {
@@ -181,7 +181,7 @@ export const SocketProvider = ({ children }) => {
 
                 // For mobile, always show fallback alerts regardless of notification permission
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                
+
                 if (isMobile) {
                     console.log('📱 Mobile device detected - using aggressive notification method');
                     showFallbackAlert();
@@ -209,7 +209,7 @@ export const SocketProvider = ({ children }) => {
                 const title = 'Order Update';
                 const body = orderData.message || `Order ${orderData.orderNumber || ''} updated`;
                 if (window.Notification && Notification.permission === 'granted') {
-                    new Notification(title, { body, icon: '/logo192.png' });
+                    new Notification(title, { body, icon: '/delhiveryway-logo.jpg' });
                 } else {
                     alert(`${title}: ${body}`);
                 }
@@ -242,7 +242,7 @@ export const SocketProvider = ({ children }) => {
                 if (window.Notification && Notification.permission === 'granted') {
                     new Notification('✅ Revision Approved!', {
                         body: `Order #${data.orderNumber} revision approved. New total: ₹${displayTotal}. Proceed with final shopping!`,
-                        icon: '/logo192.png',
+                        icon: '/delhiveryway-logo.jpg',
                         requireInteraction: true
                     });
                 } else {
@@ -312,7 +312,7 @@ export const SocketProvider = ({ children }) => {
                     if (window.Notification && Notification.permission === 'granted') {
                         new Notification('Admin Status Update', {
                             body: data.message,
-                            icon: '/logo192.png'
+                            icon: '/delhiveryway-logo.jpg'
                         });
                     } else {
                         // Fallback alert if notifications not available
@@ -344,7 +344,7 @@ export const SocketProvider = ({ children }) => {
                 if (window.Notification && Notification.permission === 'granted') {
                     new Notification('Order Status Update', {
                         body: data.message || `Order status updated to: ${data.status}`,
-                        icon: '/logo192.png'
+                        icon: '/delhiveryway-logo.jpg'
                     });
                 } else {
                     alert(data.message || `Order status updated to: ${data.status}`);
@@ -375,7 +375,7 @@ export const SocketProvider = ({ children }) => {
                 if (window.Notification && Notification.permission === 'granted') {
                     new Notification('Order Cancelled', {
                         body: data.message || 'An order has been cancelled',
-                        icon: '/logo192.png'
+                        icon: '/delhiveryway-logo.jpg'
                     });
                 } else {
                     alert(data.message || 'An order has been cancelled');
@@ -402,7 +402,7 @@ export const SocketProvider = ({ children }) => {
                 if (window.Notification && Notification.permission === 'granted') {
                     new Notification('Revision Rejected', {
                         body: data.message || 'Customer rejected your revision',
-                        icon: '/logo192.png'
+                        icon: '/delhiveryway-logo.jpg'
                     });
                 } else {
                     alert(data.message || 'Customer rejected your revision');

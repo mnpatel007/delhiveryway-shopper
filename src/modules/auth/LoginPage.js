@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../core/context/AuthContext';
 import './LoginPage.css';
 
 const LoginPage = () => {
@@ -10,7 +10,7 @@ const LoginPage = () => {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    
+
     const { login } = useAuth();
     const navigate = useNavigate();
 
@@ -27,13 +27,13 @@ const LoginPage = () => {
         setError('');
 
         const result = await login(formData.email, formData.password);
-        
+
         if (result.success) {
             navigate('/dashboard');
         } else {
             setError(result.message);
         }
-        
+
         setLoading(false);
     };
 
@@ -43,9 +43,9 @@ const LoginPage = () => {
                 <form className="login-form" onSubmit={handleSubmit}>
                     <h1 className="login-title">Personal Shopper</h1>
                     <p className="login-subtitle">Sign in to start shopping for customers</p>
-                    
+
                     {error && <div className="error-message">{error}</div>}
-                    
+
                     <div className="input-group">
                         <label htmlFor="email">Email</label>
                         <input
@@ -57,7 +57,7 @@ const LoginPage = () => {
                             required
                         />
                     </div>
-                    
+
                     <div className="input-group">
                         <label htmlFor="password">Password</label>
                         <input
@@ -69,15 +69,15 @@ const LoginPage = () => {
                             required
                         />
                     </div>
-                    
-                    <button 
-                        type="submit" 
+
+                    <button
+                        type="submit"
                         className="login-button"
                         disabled={loading}
                     >
                         {loading ? 'Signing in...' : 'Sign In'}
                     </button>
-                    
+
                     <div className="signup-link">
                         Don't have an account? <Link to="/signup">Sign up</Link>
                     </div>

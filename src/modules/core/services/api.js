@@ -70,14 +70,14 @@ export const shopperAPI = {
     signup: (userData) => api.post('/shopper/auth/register', userData),
     getProfile: () => api.get('/shopper/profile'),
     updateProfile: (data) => api.put('/shopper/profile', data),
-    
+
     // Order management
     getAvailableOrders: () => api.get('/shopper/orders/available'),
     getMyOrders: () => api.get('/shopper/orders/my'),
     acceptOrder: (orderId) => api.put(`/orders/${orderId}/status`, { status: 'accepted_by_shopper' }),
     updateOrderStatus: (orderId, data) => api.put(`/orders/${orderId}/status`, data),
     reviseOrderItems: (orderId, data) => api.put(`/orders/${orderId}/revise`, data),
-    
+
     // Dashboard stats
     getDashboardStats: () => api.get('/shopper/dashboard'),
 };

@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { SocketProvider } from './context/SocketContext';
-import MobileNotificationHelper from './components/MobileNotificationHelper';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import Dashboard from './pages/Dashboard';
-import './App.css';
+import { AuthProvider } from './modules/core/context/AuthContext';
+import { SocketProvider } from './modules/core/context/SocketContext';
+import MobileNotificationHelper from './modules/core/components/MobileNotificationHelper';
+import LoginPage from './modules/auth/LoginPage';
+import SignupPage from './modules/auth/SignupPage';
+import Dashboard from './modules/dashboard/Dashboard';
 
 // Private route component
 const PrivateRoute = ({ children }) => {
@@ -32,7 +31,7 @@ function App() {
     <AuthProvider>
       <SocketProvider>
         <BrowserRouter>
-          <div className="App">
+          <div>
             <MobileNotificationHelper />
             <Routes>
               <Route path="/login" element={<LoginPage />} />

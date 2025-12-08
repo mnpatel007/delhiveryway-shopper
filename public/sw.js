@@ -4,8 +4,8 @@ self.addEventListener('push', function (event) {
 
     const options = {
         body: event.data ? event.data.text() : 'New order available!',
-        icon: '/logo192.png',
-        badge: '/logo192.png',
+        icon: '/delhiveryway-logo.jpg',
+        badge: '/delhiveryway-logo.jpg',
         vibrate: [200, 100, 200],
         tag: 'new-order',
         requireInteraction: true,
@@ -13,12 +13,12 @@ self.addEventListener('push', function (event) {
             {
                 action: 'accept',
                 title: 'Accept Order',
-                icon: '/logo192.png'
+                icon: '/delhiveryway-logo.jpg'
             },
             {
                 action: 'dismiss',
                 title: 'Dismiss',
-                icon: '/logo192.png'
+                icon: '/delhiveryway-logo.jpg'
             }
         ]
     };

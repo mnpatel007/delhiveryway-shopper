@@ -21,12 +21,12 @@ export const AuthProvider = ({ children }) => {
         const checkAuth = () => {
             const token = localStorage.getItem('shopperToken');
             const shopperData = localStorage.getItem('shopperData');
-            
+
             if (token && shopperData) {
                 try {
                     // Set default authorization header
                     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                    
+
                     // Parse and set shopper data
                     const parsedShopper = JSON.parse(shopperData);
                     setShopper(parsedShopper);
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
             }
             setLoading(false);
         };
-        
+
         checkAuth();
     }, []);
 
@@ -51,18 +51,18 @@ export const AuthProvider = ({ children }) => {
             });
 
             const { token, shopper: shopperData } = response.data;
-            
+
             localStorage.setItem('shopperToken', token);
             localStorage.setItem('shopperData', JSON.stringify(shopperData));
-            
+
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setShopper(shopperData);
-            
+
             return { success: true };
         } catch (error) {
-            return { 
-                success: false, 
-                message: error.response?.data?.message || 'Login failed' 
+            return {
+                success: false,
+                message: error.response?.data?.message || 'Login failed'
             };
         }
     };
@@ -77,18 +77,18 @@ export const AuthProvider = ({ children }) => {
             });
 
             const { token, shopper: shopperData } = response.data;
-            
+
             localStorage.setItem('shopperToken', token);
             localStorage.setItem('shopperData', JSON.stringify(shopperData));
-            
+
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setShopper(shopperData);
-            
+
             return { success: true };
         } catch (error) {
-            return { 
-                success: false, 
-                message: error.response?.data?.message || 'Registration failed' 
+            return {
+                success: false,
+                message: error.response?.data?.message || 'Registration failed'
             };
         }
     };

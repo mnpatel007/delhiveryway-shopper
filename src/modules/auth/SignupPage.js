@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../core/context/AuthContext';
 import './SignupPage.css';
 
 const SignupPage = () => {
@@ -12,7 +12,7 @@ const SignupPage = () => {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    
+
     const { register } = useAuth();
     const navigate = useNavigate();
 
@@ -29,13 +29,13 @@ const SignupPage = () => {
         setError('');
 
         const result = await register(formData.name, formData.email, formData.password, formData.phone);
-        
+
         if (result.success) {
             navigate('/dashboard');
         } else {
             setError(result.message);
         }
-        
+
         setLoading(false);
     };
 
@@ -45,9 +45,9 @@ const SignupPage = () => {
                 <form className="signup-form" onSubmit={handleSubmit}>
                     <h1 className="signup-title">Join as Personal Shopper</h1>
                     <p className="signup-subtitle">Start earning by shopping for customers</p>
-                    
+
                     {error && <div className="error-message">{error}</div>}
-                    
+
                     <div className="input-group">
                         <label htmlFor="name">Full Name</label>
                         <input
@@ -59,7 +59,7 @@ const SignupPage = () => {
                             required
                         />
                     </div>
-                    
+
                     <div className="input-group">
                         <label htmlFor="email">Email</label>
                         <input
@@ -71,7 +71,7 @@ const SignupPage = () => {
                             required
                         />
                     </div>
-                    
+
                     <div className="input-group">
                         <label htmlFor="phone">Phone Number</label>
                         <input
@@ -83,7 +83,7 @@ const SignupPage = () => {
                             required
                         />
                     </div>
-                    
+
                     <div className="input-group">
                         <label htmlFor="password">Password</label>
                         <input
@@ -96,15 +96,15 @@ const SignupPage = () => {
                             minLength="6"
                         />
                     </div>
-                    
-                    <button 
-                        type="submit" 
+
+                    <button
+                        type="submit"
                         className="signup-button"
                         disabled={loading}
                     >
                         {loading ? 'Creating Account...' : 'Create Account'}
                     </button>
-                    
+
                     <div className="login-link">
                         Already have an account? <Link to="/login">Sign in</Link>
                     </div>

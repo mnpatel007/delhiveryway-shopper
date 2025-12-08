@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import api from '../services/api';
-import { useSocket } from '../context/SocketContext';
+import api from '../core/services/api';
+import { useSocket } from '../core/context/SocketContext';
 import './OrderManagement.css';
 
 // Component to display items list with expand/collapse functionality
@@ -802,15 +802,16 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                                     <div className="total-breakdown">
                                         {(order.revisedItems && order.revisedItems.length > 0) ||
                                             (order.orderValue?.originalTotal && order.orderValue?.originalTotal !== order.orderValue?.total) ||
-                                            (order.status === 'customer_reviewing_revision' || order.status === 'final_shopping' || order.status === 'out_for_delivery') ? (
+                                            (order.status === 'customer_reviewing_revision' || order.status === 'final_shopping' || order.status === 'out_for_delivery') ||
+                                            (order.revisedOrderValue && order.revisedOrderValue.total) ? (
                                             <>
                                                 <div className="total-row">
-                                                    <span className="total-label">Actual Total:</span>
-                                                    <span className="amount original">₹{(order.totalAmount || order.orderValue?.total || 0).toFixed(2)}</span>
+                                                    <span className="total-label">Original:</span>
+                                                    <span className="amount original">₹{(order.orderValue?.originalTotal || order.totalAmount || 0).toFixed(2)}</span>
                                                 </div>
                                                 <div className="total-row">
-                                                    <span className="total-label">Revision Total:</span>
-                                                    <span className="amount revised">₹{(order.orderValue?.originalTotal || order.revisedOrderValue?.total || order.orderValue?.total || 0).toFixed(2)}</span>
+                                                    <span className="total-label">Revised:</span>
+                                                    <span className="amount revised">₹{(order.orderValue?.total || order.revisedOrderValue?.total || order.totalAmount || 0).toFixed(2)}</span>
                                                 </div>
                                             </>
                                         ) : (
@@ -823,32 +824,35 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                                             </>
                                         )}
                                     </div>
-                                    <span className="earning">Earn: ₹{order.shopperCommission || order.orderValue?.deliveryFee || 0}</span>
+                                    <span className="earning">Est. Earning: ₹{(order.shopperCommission || 30).toFixed(2)}</span>
                                 </div>
                             </div>
 
                             <div className="order-details">
                                 <div className="customer-info">
-                                    <p><strong>Customer:</strong> {order.customerId?.name}</p>
-                                    <p><strong>Phone:</strong> {order.deliveryAddress?.contactPhone || order.customerId?.phone}</p>
-                                </div>
-
-                                <div className="shop-info">
-                                    <p><strong>Shop:</strong> {order.shopId?.name || order.shop?.name || order.shopName || 'Shop'}</p>
-                                    <p><strong>Category:</strong> {order.shopId?.category || 'General'}</p>
+                                    <h4>Customer</h4>
+                                    <p><strong>Name:</strong> {order.customerId?.name || 'N/A'}</p>
+                                    <p><strong>Phone:</strong> {order.customerId?.phone || 'N/A'}</p>
                                 </div>
 
                                 <div className="delivery-info">
-                                    <p><strong>Delivery Address:</strong></p>
-                                    <p>{order.deliveryAddress?.street}, {order.deliveryAddress?.city}</p>
+                                    <h4>Delivery Address</h4>
+                                    <p>{order.deliveryAddress?.street || 'N/A'}</p>
+                                    <p>{order.deliveryAddress?.city || 'N/A'}, {order.deliveryAddress?.zipCode || ''}</p>
                                     {order.deliveryAddress?.instructions && (
-                                        <p><em>Instructions: {order.deliveryAddress.instructions}</em></p>
+                                        <p><strong>Note:</strong> {order.deliveryAddress.instructions}</p>
                                     )}
                                 </div>
 
                                 <div className="items-info">
-                                    <p><strong>Items ({order.items?.length || 0}):</strong></p>
+                                    <h4>Items ({order.items?.length || 0})</h4>
                                     <ItemsList items={order.items || []} />
+                                </div>
+
+                                <div className="shop-info">
+                                    <h4>Shop</h4>
+                                    <p><strong>Name:</strong> {order.shopId?.name || order.shop?.name || 'N/A'}</p>
+                                    <p><strong>Address:</strong> {order.shopId?.address || order.shop?.address || 'N/A'}</p>
                                 </div>
                             </div>
 
@@ -856,19 +860,11 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                                 {getStatusActions(order)}
                             </div>
 
-                            {order.status === 'customer_reviewing_revision' && (
+                            {order.revisionNote && (
                                 <div className="revision-status">
-                                    <p>✅ Revision sent to customer. Waiting for approval.</p>
+                                    <p><strong>Revision Note:</strong> {order.revisionNote}</p>
                                 </div>
                             )}
-
-                            {order.status === 'customer_reviewing_revision' && (
-                                <div className="revision-status">
-                                    <p>⏳ Customer is reviewing your revision.</p>
-                                </div>
-                            )}
-
-
                         </div>
                     ))}
                 </div>
