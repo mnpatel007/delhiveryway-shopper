@@ -63,20 +63,6 @@ export const SocketProvider = ({ children }) => {
 
                 // Register as personal shopper
                 newSocket.emit('registerPersonalShopper', shopper.id);
-
-                // DEBUG: Force emit test location (Canada) to verify socket pipeline
-                // This bypasses Geolocation permissions to test if server receives data
-                console.log("📍 Emitting TEST location (Canada)");
-                newSocket.emit('shopperLocationUpdate', {
-                    shopperId: shopper.id,
-                    location: {
-                        latitude: 56.1304,
-                        longitude: -106.3468,
-                        heading: 0,
-                        speed: 0,
-                        timestamp: new Date()
-                    }
-                });
             });
 
             // Start tracking location
