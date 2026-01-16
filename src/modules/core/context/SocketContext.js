@@ -65,10 +65,45 @@ export const SocketProvider = ({ children }) => {
                 newSocket.emit('registerPersonalShopper', shopper.id);
             });
 
-            newSocket.on('disconnect', () => {
-                console.log('🔴 Personal Shopper disconnected from socket');
-                setConnected(false);
-            });
+            // Start tracking location
+            if ('geolocation' in navigator) {
+                console.log('📍 Requesting location access...');
+                const watchId = navigator.geolocation.watchPosition(
+                    (position) => {
+                        const { latitude, longitude, heading, speed } = position.coords;
+                        console.log('📍 Location updated:', latitude, longitude);
+
+                        // Emit location update to server
+                        newSocket.emit('shopperLocationUpdate', {
+                            shopperId: shopper.id,
+                            location: {
+                                latitude,
+                                longitude,
+                                heading,
+                                speed,
+                                timestamp: new Date()
+                            }
+                        });
+                    },
+                    (error) => {
+                        console.error('❌ Location tracking error:', error.message);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        maximumAge: 10000,
+                        timeout: 5000
+                    }
+                );
+
+                // Cleanup location watch on disconnect/unmount
+                newSocket.on('disconnect', () => {
+                    console.log('🔴 Personal Shopper disconnected from socket');
+                    setConnected(false);
+                    navigator.geolocation.clearWatch(watchId);
+                });
+            } else {
+                console.error('❌ Geolocation not supported');
+            }
 
             // Listen for new orders
             newSocket.on('newOrderAvailable', (orderData) => {
