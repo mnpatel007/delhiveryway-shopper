@@ -126,7 +126,8 @@ export const SocketProvider = ({ children }) => {
 
                 // Show browser notification or fallback alert
                 const title = 'New Order Available';
-                const body = `Order #${orderData.orderNumber || orderData.orderId?.toString().slice(-6) || ''} • Earn: ₹${orderData.estimatedEarnings || orderData.deliveryFee || ''}`;
+                const earnAmount = Number(orderData.estimatedEarnings || orderData.deliveryFee || 0);
+                const body = `Order #${orderData.orderNumber || orderData.orderId?.toString().slice(-6) || ''} • Earn: ₹${earnAmount > 0 ? earnAmount.toFixed(2) : '0.00'}`;
 
                 // Enhanced mobile notification handling
                 const showNotification = () => {

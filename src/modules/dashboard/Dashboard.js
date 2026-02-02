@@ -255,7 +255,7 @@ const Dashboard = () => {
                     <div className="stat-content">
                         <h3>Today's Earnings</h3>
                         <p className="stat-value">
-                            {earningsLoading ? '...' : `₹${earnings.today || 0}`}
+                            {earningsLoading ? '...' : `₹${(earnings.today || 0).toFixed(2)}`}
                         </p>
                         <span className="stat-change positive">+12% from yesterday</span>
                     </div>
@@ -449,21 +449,21 @@ const Dashboard = () => {
                 <div className="earnings-card">
                     <h4>This Month</h4>
                     <p className="earnings-amount">
-                        {earningsLoading ? '...' : `₹${earnings.thisMonth || 0}`}
+                        {earningsLoading ? '...' : `₹${(earnings.thisMonth || 0).toFixed(2)}`}
                     </p>
                     <span className="earnings-change positive">+15% from last month</span>
                 </div>
                 <div className="earnings-card">
                     <h4>This Week</h4>
                     <p className="earnings-amount">
-                        {earningsLoading ? '...' : `₹${earnings.thisWeek || 0}`}
+                        {earningsLoading ? '...' : `₹${(earnings.thisWeek || 0).toFixed(2)}`}
                     </p>
                     <span className="earnings-change positive">+8% from last week</span>
                 </div>
                 <div className="earnings-card">
                     <h4>Today</h4>
                     <p className="earnings-amount">
-                        {earningsLoading ? '...' : `₹${earnings.today || 0}`}
+                        {earningsLoading ? '...' : `₹${(earnings.today || 0).toFixed(2)}`}
                     </p>
                     <span className="earnings-change">Orders completed today</span>
                 </div>
@@ -563,7 +563,7 @@ const Dashboard = () => {
                                                 </>
                                             )}
                                         </div>
-                                        <div className="earning-amount">Earned: ₹{earning}</div>
+                                        <div className="earning-amount">Earned: ₹{Number(earning).toFixed(2)}</div>
                                     </div>
                                 </div>
                             );
@@ -601,7 +601,7 @@ const Dashboard = () => {
                     <span className="stat-label">Total Orders</span>
                 </div>
                 <div className="stat">
-                    <span className="stat-value">₹{shopper?.stats?.totalEarnings || 0}</span>
+                    <span className="stat-value">₹{(shopper?.stats?.totalEarnings || 0).toFixed(2)}</span>
                     <span className="stat-label">Total Earnings</span>
                 </div>
                 <div className="stat">
