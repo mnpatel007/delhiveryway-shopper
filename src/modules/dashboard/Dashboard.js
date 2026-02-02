@@ -131,15 +131,16 @@ const Dashboard = () => {
                 })));
 
                 // Sort orders by date (most recent first)
+                // Sort orders by date (most recent first)
                 const sortedOrders = orders.sort((a, b) => {
-                    const dateA = new Date(a.deliveredAt || a.updatedAt || a.createdAt);
-                    const dateB = new Date(b.deliveredAt || b.updatedAt || b.createdAt);
+                    const dateA = new Date(a.actualDeliveryTime || a.deliveredAt || a.updatedAt || a.createdAt);
+                    const dateB = new Date(b.actualDeliveryTime || b.deliveredAt || b.updatedAt || b.createdAt);
                     return dateB - dateA; // Descending order (newest first)
                 });
 
                 console.log('📦 Sorted orders by date:', sortedOrders.map(o => ({
                     id: o._id?.slice(-8),
-                    date: new Date(o.deliveredAt || o.updatedAt || o.createdAt).toLocaleDateString()
+                    date: new Date(o.actualDeliveryTime || o.deliveredAt || o.updatedAt || o.createdAt).toLocaleDateString()
                 })));
 
                 setOrderHistory(sortedOrders);
@@ -496,7 +497,7 @@ const Dashboard = () => {
                                         <div className="order-id">Order #{order.orderNumber || order._id?.slice(-8)}</div>
                                         <div className="order-date">
                                             {(() => {
-                                                const date = new Date(order.deliveredAt || order.updatedAt || order.createdAt);
+                                                const date = new Date(order.actualDeliveryTime || order.deliveredAt || order.updatedAt || order.createdAt);
                                                 const now = new Date();
                                                 const diffTime = Math.abs(now - date);
                                                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
