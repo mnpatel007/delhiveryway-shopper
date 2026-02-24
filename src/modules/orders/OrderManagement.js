@@ -280,7 +280,14 @@ const OrderManagement = () => {
     const generateOrderSummary = (order) => {
         const orderNumber = order.orderNumber || order._id?.slice(-8) || 'N/A';
         const customerName = order.customerId?.name || 'Unknown Customer';
-        const customerPhone = order.deliveryAddress?.contactPhone || order.customerId?.phone || 'N/A';
+
+        // Use delivery contact or fallback to permanent contact
+        const customerPhone = order.deliveryAddress?.contactPhone || order.deliveryAddress?.permanentContactPhone || order.customerId?.phone || 'N/A';
+        // Check if there is a permanent contact distinct from the delivery contact
+        const permanentContactPhone = (order.deliveryAddress?.permanentContactPhone && order.deliveryAddress?.permanentContactPhone !== order.deliveryAddress?.contactPhone)
+            ? `${order.deliveryAddress?.permanentCountryCode || '+91'} ${order.deliveryAddress?.permanentContactPhone}`
+            : null;
+
         const shopName = order.shopId?.name || order.shop?.name || order.shopName || 'Shop';
 
         // Calculate totals
@@ -314,8 +321,8 @@ const OrderManagement = () => {
 
 👤 *Customer Details:*
 Name: ${customerName}
-Phone: ${customerPhone}
-
+Delivery Contact: ${customerPhone}
+${permanentContactPhone ? `Reg. Contact: ${permanentContactPhone}\n` : ''}
 📍 *Delivery Address:*
 ${address}
 ${order.deliveryAddress?.instructions ? `\nInstructions: ${order.deliveryAddress.instructions}` : ''}
@@ -832,7 +839,14 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                                 <div className="customer-info">
                                     <h4>Customer</h4>
                                     <p><strong>Name:</strong> {order.customerId?.name || 'N/A'}</p>
-                                    <p><strong>Phone:</strong> {order.deliveryAddress?.contactPhone || order.deliveryAddress?.phone || order.customerId?.phone || 'N/A'}</p>
+                                    <p>
+                                        <strong>Delivery Phone:</strong> {order.deliveryAddress?.contactPhone || order.customerId?.phone || 'N/A'}
+                                    </p>
+                                    {order.deliveryAddress?.permanentContactPhone && order.deliveryAddress?.permanentContactPhone !== order.deliveryAddress?.contactPhone && (
+                                        <p>
+                                            <strong>Reg. Phone:</strong> {order.deliveryAddress?.permanentCountryCode || '+91'} {order.deliveryAddress.permanentContactPhone}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="delivery-info">
