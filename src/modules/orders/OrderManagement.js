@@ -321,8 +321,7 @@ const OrderManagement = () => {
 
 👤 *Customer Details:*
 Name: ${customerName}
-Delivery Contact: ${customerPhone}
-${permanentContactPhone ? `Reg. Contact: ${permanentContactPhone}\n` : ''}
+${permanentContactPhone ? `Registered Phone: ${permanentContactPhone}\n` : ''}Contact Number: ${customerPhone}
 📍 *Delivery Address:*
 ${address}
 ${order.deliveryAddress?.instructions ? `\nInstructions: ${order.deliveryAddress.instructions}` : ''}
@@ -839,14 +838,14 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                                 <div className="customer-info">
                                     <h4>Customer</h4>
                                     <p><strong>Name:</strong> {order.customerId?.name || 'N/A'}</p>
-                                    <p>
-                                        <strong>Delivery Phone:</strong> {order.deliveryAddress?.contactPhone || order.customerId?.phone || 'N/A'}
-                                    </p>
                                     {order.deliveryAddress?.permanentContactPhone && order.deliveryAddress?.permanentContactPhone !== order.deliveryAddress?.contactPhone && (
                                         <p>
-                                            <strong>Reg. Phone:</strong> {order.deliveryAddress?.permanentCountryCode || '+91'} {order.deliveryAddress.permanentContactPhone}
+                                            <strong>Registered Phone:</strong> {order.deliveryAddress?.permanentCountryCode || '+91'} {order.deliveryAddress.permanentContactPhone}
                                         </p>
                                     )}
+                                    <p>
+                                        <strong>Contact Number:</strong> {order.deliveryAddress?.contactPhone || order.customerId?.phone || 'N/A'}
+                                    </p>
                                 </div>
 
                                 <div className="delivery-info">
