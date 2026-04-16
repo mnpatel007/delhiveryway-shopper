@@ -77,14 +77,16 @@ export const AuthProvider = ({ children }) => {
             });
 
             const { token, shopper: shopperData } = response.data;
-
-            localStorage.setItem('shopperToken', token);
-            localStorage.setItem('shopperData', JSON.stringify(shopperData));
-
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            setShopper(shopperData);
-
-            return { success: true };
+            
+            if (token) {
+                localStorage.setItem('shopperToken', token);
+                localStorage.setItem('shopperData', JSON.stringify(shopperData));
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                setShopper(shopperData);
+                return { success: true };
+            } else {
+                return { success: true, pendingApproval: true };
+            }
         } catch (error) {
             return {
                 success: false,
