@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../core/context/AuthContext';
 import './LoginPage.css';
 
@@ -13,6 +13,8 @@ const LoginPage = () => {
 
     const { login } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const [notice, setNotice] = useState(location.state?.message || '');
 
     const handleChange = (e) => {
         setFormData({
@@ -42,7 +44,17 @@ const LoginPage = () => {
             <div className="login-wrapper">
                 <form className="login-form" onSubmit={handleSubmit}>
                     <h1 className="login-title">Personal Shopper</h1>
-                    <p className="login-subtitle">Sign in to start shopping for customers</p>
+                    <p className="signup-subtitle">Sign in to start shopping for customers</p>
+ 
+                    {notice && <div className="success-message" style={{ 
+                        backgroundColor: '#d4edda', 
+                        color: '#155724', 
+                        padding: '10px', 
+                        borderRadius: '4px', 
+                        marginBottom: '15px',
+                        fontSize: '14px',
+                        border: '1px solid #c3e6cb'
+                    }}>{notice}</div>}
 
                     {error && <div className="error-message">{error}</div>}
 
