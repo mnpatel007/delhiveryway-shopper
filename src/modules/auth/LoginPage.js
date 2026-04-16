@@ -14,7 +14,7 @@ const LoginPage = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const [notice, setNotice] = useState(location.state?.message || '');
+    const notice = location.state?.message || '';
 
     const handleChange = (e) => {
         setFormData({
