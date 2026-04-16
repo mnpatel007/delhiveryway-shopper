@@ -30,15 +30,21 @@ const SignupPage = () => {
         setError('');
 
         const result = await register(formData.name, formData.email, formData.password, formData.phone);
+        console.log('📝 Registration result:', result);
 
         if (result.success) {
             if (result.pendingApproval) {
-                // Show success message and don't navigate to dashboard
+                console.log('⏳ Approval pending - showing success message');
                 setSuccess(true);
-            } else {
+            } else if (localStorage.getItem('shopperToken')) {
+                console.log('✅ Token found - navigating to dashboard');
                 navigate('/dashboard');
+            } else {
+                console.warn('⚠️ Success received but no token found and not pending approval. Staying on page.');
+                setError('Registration successful, but something went wrong with the session. Please try logging in.');
             }
         } else {
+            console.error('❌ Registration failed:', result.message);
             setError(result.message);
         }
 

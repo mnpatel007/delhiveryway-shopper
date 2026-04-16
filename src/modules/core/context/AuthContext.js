@@ -68,6 +68,9 @@ export const AuthProvider = ({ children }) => {
     };
 
     const register = async (name, email, password, phone) => {
+        // Clear any existing session first to prevent session leakage
+        logout();
+        
         try {
             const response = await axios.post(`${API_BASE_URL}/shopper/auth/register`, {
                 name,
