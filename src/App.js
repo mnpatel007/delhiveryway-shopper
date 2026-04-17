@@ -10,7 +10,24 @@ import Dashboard from './modules/dashboard/Dashboard';
 // Private route component
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('shopperToken');
-  return token ? children : <Navigate to="/login" />;
+  const shopperData = localStorage.getItem('shopperData');
+  
+  if (!token || !shopperData) {
+    return <Navigate to="/login" />;
+  }
+
+  try {
+    const shopper = JSON.parse(shopperData);
+    // Block access if not verified
+    if (shopper.verification && shopper.verification.isVerified === false) {
+      console.warn('🚦 Unverified shopper blocked from dashboard');
+      return <Navigate to="/login" />;
+    }
+  } catch (e) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
 };
 
 function App() {

@@ -52,6 +52,12 @@ export const AuthProvider = ({ children }) => {
 
             const { token, shopper: shopperData } = response.data;
 
+            // Security Check: If unverified, block session and return as if it was a specialized error
+            if (shopperData.verification && shopperData.verification.isVerified === false) {
+                logout(); // Wipe anything that might have been received
+                return { success: false, message: 'Your verification is still pending' };
+            }
+
             localStorage.setItem('shopperToken', token);
             localStorage.setItem('shopperData', JSON.stringify(shopperData));
 
@@ -81,13 +87,15 @@ export const AuthProvider = ({ children }) => {
 
             const { token, shopper: shopperData } = response.data;
             
-            if (token) {
+            // Strictly block any session establishment during signup for unverified accounts
+            if (token && shopperData?.verification?.isVerified !== false) {
                 localStorage.setItem('shopperToken', token);
                 localStorage.setItem('shopperData', JSON.stringify(shopperData));
                 axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                 setShopper(shopperData);
                 return { success: true };
             } else {
+                logout(); // Ensure a clean slate
                 return { success: true, pendingApproval: true };
             }
         } catch (error) {
