@@ -18,6 +18,19 @@ export const AuthProvider = ({ children }) => {
     const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
     useEffect(() => {
+        // Global interceptor to catch 403 verification errors
+        const interceptor = axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response?.status === 403 && error.response?.data?.message === 'Your verification is still pending') {
+                    console.error('🚦 NUCLEAR EVICTION: Server rejected unverified session. Logging out.');
+                    logout();
+                    window.location.href = '/login';
+                }
+                return Promise.reject(error);
+            }
+        );
+
         const checkAuth = () => {
             const token = localStorage.getItem('shopperToken');
             const shopperData = localStorage.getItem('shopperData');
@@ -41,6 +54,10 @@ export const AuthProvider = ({ children }) => {
         };
 
         checkAuth();
+
+        return () => {
+            axios.interceptors.response.eject(interceptor);
+        };
     }, []);
 
     const login = async (email, password) => {

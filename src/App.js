@@ -18,9 +18,9 @@ const PrivateRoute = ({ children }) => {
 
   try {
     const shopper = JSON.parse(shopperData);
-    // Block access if not verified
-    if (shopper.verification && shopper.verification.isVerified === false) {
-      console.warn('🚦 Unverified shopper blocked from dashboard');
+    // NUCLEAR CLIENT CHECK: Block access if status is anything other than explicitly true
+    if (shopper.verification?.isVerified !== true) {
+      console.warn('🚦 Strict bypass detected: Unverified shopper evicted from dashboard');
       return <Navigate to="/login" />;
     }
   } catch (e) {
