@@ -793,17 +793,6 @@ Items Total: ₹${itemsTotal.toFixed(2)}
                                     </span>
                                     {getStatusBadge(order.status)}
                                 </div>
-                                {/* Debug: Log order data (development only) */}
-                                {process.env.NODE_ENV === 'development' && console.log('🔍 Order data for display:', {
-                                    orderId: order._id,
-                                    status: order.status,
-                                    revisedItems: order.revisedItems,
-                                    originalTotal: order.orderValue?.originalTotal,
-                                    currentTotal: order.orderValue?.total,
-                                    totalAmount: order.totalAmount,
-                                    revisedOrderValue: order.revisedOrderValue,
-                                    fullOrderValue: order.orderValue
-                                })}
                                 <div className="order-value">
                                     <div className="total-breakdown">
                                         {(order.revisedItems && order.revisedItems.length > 0) ||

@@ -345,19 +345,6 @@ const Dashboard = () => {
                             display: 'block',
                             width: '100%'
                         }}>
-                            {/* Debug: Log order data (development only) */}
-                            {process.env.NODE_ENV === 'development' && console.log('🔍 Order data:', {
-                                id: order._id,
-                                orderNumber: order.orderNumber,
-                                totalAmount: order.totalAmount,
-                                orderValue: order.orderValue,
-                                shopId: order.shopId,
-                                shopName: order.shopId?.name,
-                                amount: order.amount,
-                                finalAmount: order.finalAmount,
-                                shopperCommission: order.shopperCommission,
-                                deliveryFee: order.deliveryFee
-                            })}
                             <div className="order-header">
                                 <div className="order-info">
                                     <h4>Order #{order.orderNumber || order._id?.slice(-8)}</h4>
@@ -524,19 +511,6 @@ const Dashboard = () => {
                                         <div className="shop">🏪 {order.shopId?.name || order.shop?.name || order.shopName || 'Shop'}</div>
                                     </div>
                                     <div className="order-earnings">
-                                        {/* Debug: Log order data (development only) */}
-                                        {process.env.NODE_ENV === 'development' && console.log('🔍 Dashboard order data:', {
-                                            orderId: order._id,
-                                            status: order.status,
-                                            shopId: order.shopId,
-                                            shopName: order.shopId?.name,
-                                            shop: order.shop,
-                                            revisedItems: order.revisedItems,
-                                            originalTotal: order.orderValue?.originalTotal,
-                                            currentTotal: order.orderValue?.total,
-                                            totalAmount: order.totalAmount,
-                                            orderAmount: orderAmount
-                                        })}
                                         <div className="order-totals-breakdown">
                                             {(order.revisedItems && order.revisedItems.length > 0) ||
                                                 (order.orderValue?.originalTotal && order.orderValue?.originalTotal !== order.orderValue?.total) ||
