@@ -1,70 +1,73 @@
-# Getting Started with Create React App
+# DelhiveryWay Personal Shopper Portal
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The mobile-first web app Personal Shoppers use to go online, pick up assigned
+orders, shop at the store, and hand off for delivery — the operational heart
+of DelhiveryWay's fulfillment side.
 
-## Available Scripts
+## ✨ Key Features
 
-In the project directory, you can run:
+- **🟢 Online / Offline Availability**
+  - Toggle availability to start or stop receiving new order assignments.
+  - Live connection status shown on the dashboard (Socket.io).
 
-### `npm start`
+- **📋 Order Management**
+  - Accept incoming orders and walk them through the full fulfillment
+    lifecycle — accepted → at shop → shopping in progress → revised
+    (if items are unavailable) → out for delivery → delivered.
+  - Customer and shop details surfaced per order.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **📊 Earnings Dashboard**
+  - Today / yesterday order counts and earnings at a glance.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **🔔 Real-time & Mobile Notifications**
+  - Live order and status updates via Socket.io.
+  - Service-worker-backed push notifications (works even when the app
+    isn't in the foreground on mobile).
 
-### `npm test`
+- **🔐 Authentication**
+  - Dedicated Personal Shopper login/signup, separate from customer
+    accounts — new signups require admin verification before going live.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠️ Technology Stack
 
-### `npm run build`
+- **Frontend Framework**: [React 19](https://react.dev/)
+- **Routing**: [React Router v7](https://reactrouter.com/)
+- **State Management**: React Context API & Hooks
+- **HTTP Client**: [Axios](https://axios-http.com/)
+- **Real-time**: Socket.io client for live order/status updates
+- **Mobile Push**: Service worker (`public/sw.js`) for background notifications
+- **Build Tool**: Create React App 5.0.1
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📂 Project Structure
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+delhiveryway-shopper/
+├── .env.development            # Committed, non-secret dev config (see backend README)
+├── env.example                 # Template for a real .env (production)
+├── package.json
+├── vercel.json                 # Deployment config
+├── public/
+│   ├── index.html
+│   ├── manifest.json
+│   ├── delhiveryway-logo.jpg
+│   ├── notification.mp3        # Sound played on new-order notifications
+│   └── sw.js                   # Service worker for mobile push notifications
+└── src/
+    ├── App.js                  # Root component and route definitions
+    ├── index.js / index.css    # App entry point and global styles
+    └── modules/                 # Feature modules
+        ├── auth/                 # LoginPage, SignupPage
+        ├── core/                  # Shared building blocks
+        │   ├── components/         # ErrorBoundary, Logo, MobileNotificationHelper
+        │   ├── context/            # AuthContext, SocketContext
+        │   └── services/           # api.js
+        ├── dashboard/              # Dashboard — online status, earnings, order stats
+        └── orders/                 # OrderManagement — accept & fulfill orders
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+For the complete local development setup — installing WSL, Docker, Node, cloning
+all five DelhiveryWay repos, seeding the database, and running everything
+together — see the
+[`backend` repo's README](https://github.com/mnpatel007/delhiveryway-backend#readme).
+That's the single source of truth for setup; once it's done, come back here and
+run `npm start` in this repo (`http://localhost:3002`).
