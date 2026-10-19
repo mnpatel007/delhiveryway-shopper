@@ -286,20 +286,9 @@ const OrderManagement = () => {
 
   const generateOrderSummary = (order) => {
     const orderNumber = order.orderNumber || order._id?.slice(-8) || 'N/A';
-    const customerName = order.customerId?.name || 'Unknown Customer';
 
-    // Use delivery contact or fallback to permanent contact
-    const customerPhone =
-      order.deliveryAddress?.contactPhone ||
-      order.deliveryAddress?.permanentContactPhone ||
-      order.customerId?.phone ||
-      'N/A';
-    // Check if there is a permanent contact distinct from the delivery contact
-    const permanentContactPhone =
-      order.deliveryAddress?.permanentContactPhone &&
-      order.deliveryAddress?.permanentContactPhone !== order.deliveryAddress?.contactPhone
-        ? `${order.deliveryAddress?.permanentCountryCode || '+91'} ${order.deliveryAddress?.permanentContactPhone}`
-        : null;
+    // The customer's name, phone numbers and address are deliberately NOT in
+    // the shared message - it gets pasted into WhatsApp, SMS and clipboards.
 
     const shopName = order.shopId?.name || order.shop?.name || order.shopName || 'Shop';
 
@@ -311,10 +300,11 @@ const OrderManagement = () => {
         return sum + price * quantity;
       }, 0) || 0;
 
-    // Format address
-    const address = order.deliveryAddress
-      ? `${order.deliveryAddress.street || ''}, ${order.deliveryAddress.city || ''}${order.deliveryAddress.zipCode ? ' - ' + order.deliveryAddress.zipCode : ''}`
-      : 'Address not provided';
+    // Only some shops charge for packaging. Prefer the revised figure when the
+    // order was revised, and leave the line out entirely when there is none.
+    const packagingCharges = Number(
+      order.revisedOrderValue?.packagingCharges ?? order.orderValue?.packagingCharges ?? 0
+    );
 
     // Format items list
     const itemsList =
@@ -334,18 +324,11 @@ const OrderManagement = () => {
 🏪 *Shop:* ${shopName}
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
 
-👤 *Customer Details:*
-Name: ${customerName}
-${permanentContactPhone ? `Registered Phone: ${permanentContactPhone}\n` : ''}Contact Number: ${customerPhone}
-📍 *Delivery Address:*
-${address}
-${order.deliveryAddress?.instructions ? `\nInstructions: ${order.deliveryAddress.instructions}` : ''}
-
 🛍️ *Items Ordered:*
 ${itemsList}
 
 💰 *Order Summary:*
-Items Total: ₹${itemsTotal.toFixed(2)}
+Items Total: ₹${itemsTotal.toFixed(2)}${packagingCharges > 0 ? `\nPackaging Charges: ₹${packagingCharges.toFixed(2)}` : ''}
 
 📱 *Shared via DelhiveryWay Shopper App*`;
 
