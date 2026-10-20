@@ -286,9 +286,23 @@ const OrderManagement = () => {
 
   const generateOrderSummary = (order) => {
     const orderNumber = order.orderNumber || order._id?.slice(-8) || 'N/A';
+    const customerName = order.customerId?.name || 'Unknown Customer';
 
-    // The customer's name, phone numbers and address are deliberately NOT in
-    // the shared message - it gets pasted into WhatsApp, SMS and clipboards.
+    // Use delivery contact or fallback to permanent contact
+    const customerPhone =
+      order.deliveryAddress?.contactPhone ||
+      order.deliveryAddress?.permanentContactPhone ||
+      order.customerId?.phone ||
+      'N/A';
+    // Check if there is a permanent contact distinct from the delivery contact
+    const permanentContactPhone =
+      order.deliveryAddress?.permanentContactPhone &&
+      order.deliveryAddress?.permanentContactPhone !== order.deliveryAddress?.contactPhone
+        ? `${order.deliveryAddress?.permanentCountryCode || '+91'} ${order.deliveryAddress?.permanentContactPhone}`
+        : null;
+
+    // The street address is deliberately left out of the shared message - it
+    // gets pasted into WhatsApp, SMS and clipboards.
 
     const shopName = order.shopId?.name || order.shop?.name || order.shopName || 'Shop';
 
@@ -323,6 +337,10 @@ const OrderManagement = () => {
 📋 *Order #${orderNumber}*
 🏪 *Shop:* ${shopName}
 📅 *Date:* ${new Date().toLocaleDateString('en-IN')}
+
+👤 *Customer Details:*
+Name: ${customerName}
+${permanentContactPhone ? `Registered Phone: ${permanentContactPhone}\n` : ''}Contact Number: ${customerPhone}${order.deliveryAddress?.instructions ? `\nInstructions: ${order.deliveryAddress.instructions}` : ''}
 
 🛍️ *Items Ordered:*
 ${itemsList}
